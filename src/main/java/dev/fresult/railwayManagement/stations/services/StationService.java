@@ -1,7 +1,8 @@
 package dev.fresult.railwayManagement.stations.services;
 
-import dev.fresult.railwayManagement.stations.dtos.StationRequest;
+import dev.fresult.railwayManagement.stations.dtos.StationCreationRequest;
 import dev.fresult.railwayManagement.stations.dtos.StationResponse;
+import dev.fresult.railwayManagement.stations.dtos.StationUpdateRequest;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ public interface StationService {
 
   StationResponse getStationById(int id);
 
-  StationResponse createStation(StationRequest stationRequest);
+  StationResponse createStation(StationCreationRequest body);
 
-  StationResponse updateStationById(int id, StationRequest stationRequest);
+  StationResponse updateStationById(int id, StationUpdateRequest body);
 
   boolean deleteStationById(int id);
 }

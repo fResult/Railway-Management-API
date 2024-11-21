@@ -3,8 +3,9 @@ package dev.fresult.railwayManagement.stations.services;
 import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
 import dev.fresult.railwayManagement.stations.Station;
 import dev.fresult.railwayManagement.stations.StationRepository;
-import dev.fresult.railwayManagement.stations.dtos.StationRequest;
+import dev.fresult.railwayManagement.stations.dtos.StationCreationRequest;
 import dev.fresult.railwayManagement.stations.dtos.StationResponse;
+import dev.fresult.railwayManagement.stations.dtos.StationUpdateRequest;
 import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
 import dev.fresult.railwayManagement.users.services.UserService;
 import java.util.List;
@@ -52,8 +53,20 @@ public class StationServiceImpl implements StationService {
   }
 
   @Override
-  public StationResponse updateStationById(int id, StationRequest stationRequest) {
-    throw new UnsupportedOperationException("Not implemented yet");
+  public StationResponse updateStationById(int id, StationUpdateRequest body) {
+    logger.debug("[updateStationById] Updating {} id: [{}]", Station.class.getSimpleName(), id);
+    var toStationUpdate = StationUpdateRequest.dtoToUserUpdate(body);
+    var stationToUpdate =
+        stationRepository
+            .findById(id)
+            .map(toStationUpdate)
+            .orElseThrow(errorHelper.entityNotFound("getStationById", Station.class, id));
+
+    var updatedStation = stationRepository.save(stationToUpdate);
+    logger.info(
+        "[updateStationById] {} is updated: {}", Station.class.getSimpleName(), updatedStation);
+
+    return Optional.of(updatedStation).map(this::toResponseWithContact).get();
   }
 
   @Override
@@ -61,6 +74,7 @@ public class StationServiceImpl implements StationService {
     logger.debug(
         "[deleteStationById] Deleting {} with id: {}", StationResponse.class.getSimpleName(), id);
     stationRepository.deleteById(id);
+    logger.info("[deleteStationById] {} id [{}] is deleted", StationResponse.class.getSimpleName(), id);
 
     return true;
   }
@@ -69,5 +83,13 @@ public class StationServiceImpl implements StationService {
     return stations.stream()
         .map(station -> station.contactId().getId())
         .collect(Collectors.toSet());
+  }
+
+  private StationResponse toResponseWithContact(Station station) {
+    var contactId =
+        Optional.ofNullable(station.contactId().getId())
+            .orElseThrow(errorHelper.runtimeError("getStationById", "Contact Id is null"));
+    var contact = userService.getUserById(contactId);
+    return StationResponse.fromStationDao(station, contact);
   }
 }

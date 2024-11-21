@@ -3,13 +3,17 @@ package dev.fresult.railwayManagement.stations.dtos;
 import dev.fresult.railwayManagement.stations.Station;
 import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
 import dev.fresult.railwayManagement.users.entities.User;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
 public record StationResponse(
     int id, String code, String name, String location, UserInfoResponse contactInfo) {
+  public static StationResponse fromStationDao(Station station) {
+    return new StationResponse(
+        station.id(), station.code(), station.name(), station.location(), null);
+  }
+
   public static StationResponse fromStationDao(Station station, UserInfoResponse contact) {
     return new StationResponse(
         station.id(),

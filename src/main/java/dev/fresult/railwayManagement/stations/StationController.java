@@ -1,7 +1,8 @@
 package dev.fresult.railwayManagement.stations;
 
-import dev.fresult.railwayManagement.stations.dtos.StationRequest;
+import dev.fresult.railwayManagement.stations.dtos.StationCreationRequest;
 import dev.fresult.railwayManagement.stations.dtos.StationResponse;
+import dev.fresult.railwayManagement.stations.dtos.StationUpdateRequest;
 import dev.fresult.railwayManagement.stations.services.StationService;
 import java.net.URI;
 import java.util.List;
@@ -35,7 +36,7 @@ public class StationController {
   }
 
   @PostMapping
-  public ResponseEntity<StationResponse> create(@Validated @RequestBody StationRequest body) {
+  public ResponseEntity<StationResponse> create(@Validated @RequestBody StationCreationRequest body) {
     logger.debug("[create] new {} is creating", Station.class.getSimpleName());
     var createdStation = stationService.createStation(body);
     var uri = URI.create(String.format("/api/stations/%d", createdStation.id()));
@@ -45,7 +46,7 @@ public class StationController {
 
   @PatchMapping("/{id}")
   public ResponseEntity<StationResponse> updateById(
-      @PathVariable int id, @Validated @RequestBody StationRequest body) {
+      @PathVariable int id, @Validated @RequestBody StationUpdateRequest body) {
     logger.debug("[updateById] Updating {} by id: {}", Station.class.getSimpleName(), id);
     var updatedStation = stationService.updateStationById(id, body);
     return ResponseEntity.ok(updatedStation);
