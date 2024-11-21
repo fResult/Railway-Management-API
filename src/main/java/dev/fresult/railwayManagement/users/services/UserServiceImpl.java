@@ -53,8 +53,7 @@ public class UserServiceImpl implements UserService {
     var userToRegister =
         new User(null, body.firstName(), body.lastName(), body.email(), encryptedPassword);
     var registeredUser = userRepository.save(userToRegister);
-    var addedUserRole =
-        userRoleService.saveUserRole(registeredUser.id(), RoleName.PASSENGER.getId());
+    userRoleService.saveUserRole(registeredUser.id(), RoleName.PASSENGER.getId());
     logger.info("[register] new {}: {} is registered", User.class.getSimpleName(), registeredUser);
 
     return UserInfoResponse.fromUserDao(registeredUser);
@@ -62,6 +61,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<UserInfoResponse> getUsers() {
+    logger.debug("[getUsers] Getting all {}s", User.class.getSimpleName());
     return userRepository.findAll().stream().map(UserInfoResponse::fromUserDao).toList();
   }
 
@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserInfoResponse getUserById(int id) {
+    logger.debug("[getUserById] Getting {} by id: [{}]", User.class.getSimpleName(), id);
     return userRepository
         .findById(id)
         .map(UserInfoResponse::fromUserDao)
@@ -81,11 +82,13 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<UserInfoResponse> getUsersByIds(Collection<Integer> ids) {
+    logger.debug("[getUsersByIds] Getting {}s by ids: [{}]", User.class.getSimpleName(), ids);
     return userRepository.findByIdIn(ids).stream().map(UserInfoResponse::fromUserDao).toList();
   }
 
   @Override
   public UserInfoResponse updateUserById(int id, UserUpdateRequest body) {
+    logger.debug("[updateUser] Updating {} id: [{}]", User.class.getSimpleName(), id);
     var toUserUpdate = UserUpdateRequest.dtoToUserUpdate(body);
     var userToUpdate =
         userRepository
@@ -93,19 +96,21 @@ public class UserServiceImpl implements UserService {
             .map(toUserUpdate)
             .orElseThrow(errorHelper.entityNotFound("updateUser", User.class, id));
     var updatedUser = userRepository.save(userToUpdate);
-    logger.info("[updateUser] {}: {} is updated", User.class.getSimpleName(), updatedUser);
+    logger.info("[updateUser] {} is updated: {}", User.class.getSimpleName(), updatedUser);
 
     return UserInfoResponse.fromUserDao(updatedUser);
   }
 
   @Override
   public boolean deleteUserById(int id) {
+    logger.debug("[deleteUser] Deleting {} id [{}]", User.class.getSimpleName(), id);
     var userToDelete =
         userRepository
             .findById(id)
             .orElseThrow(errorHelper.entityNotFound("deleteUser", User.class, id));
 
     userRepository.delete(userToDelete);
+    logger.info("[deleteUser] {} id [{}] is deleted", User.class.getSimpleName(), id);
 
     return true;
   }
