@@ -1,14 +1,15 @@
 package dev.fresult.railwayManagement.stations;
 
+import dev.fresult.railwayManagement.stations.dtos.StationRequest;
+import dev.fresult.railwayManagement.stations.dtos.StationResponse;
 import dev.fresult.railwayManagement.stations.services.StationService;
+import java.net.URI;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/stations")

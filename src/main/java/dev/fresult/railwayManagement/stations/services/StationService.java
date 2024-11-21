@@ -1,7 +1,7 @@
 package dev.fresult.railwayManagement.stations.services;
 
-import dev.fresult.railwayManagement.stations.StationRequest;
-import dev.fresult.railwayManagement.stations.StationResponse;
+import dev.fresult.railwayManagement.stations.dtos.StationRequest;
+import dev.fresult.railwayManagement.stations.dtos.StationResponse;
 
 import java.util.List;
 

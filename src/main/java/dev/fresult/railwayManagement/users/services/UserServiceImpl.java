@@ -8,9 +8,9 @@ import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
 import dev.fresult.railwayManagement.users.dtos.UserUpdateRequest;
 import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.repositories.UserRepository;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,6 +77,11 @@ public class UserServiceImpl implements UserService {
         .findById(id)
         .map(UserInfoResponse::fromUserDao)
         .orElseThrow(errorHelper.entityNotFound("getUserById", User.class, 888));
+  }
+
+  @Override
+  public List<UserInfoResponse> getUsersByIds(Collection<Integer> ids) {
+    return  userRepository.findByIdIn(ids).stream().map(UserInfoResponse::fromUserDao).toList();
   }
 
   @Override
