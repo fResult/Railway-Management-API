@@ -24,6 +24,7 @@ public class UserController {
     this.userService = userService;
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @GetMapping
   public ResponseEntity<List<UserInfoResponse>> getUsers() {
     logger.debug("[getUsers] Getting all users");
@@ -31,6 +32,7 @@ public class UserController {
     return ResponseEntity.ok(userService.getUsers());
   }
 
+  // TODO: need to have token to get information
   @GetMapping("/me")
   public ResponseEntity<UserInfoResponse> getMyUserInfo() {
     logger.debug("[getMyUserInfo] Getting my user info");
@@ -38,6 +40,7 @@ public class UserController {
     return ResponseEntity.ok(userService.getMyUserInfo());
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @GetMapping("/{id}")
   public ResponseEntity<UserInfoResponse> getUserById(@PathVariable int id) {
     logger.debug("[getUserById] Getting {} by id: {}", User.class.getSimpleName(), id);
@@ -46,6 +49,7 @@ public class UserController {
     return ResponseEntity.ok(user);
   }
 
+  // TODO: Protected route for logged in user
   @PatchMapping("/{id}")
   public ResponseEntity<UserInfoResponse> updateUserById(
       @PathVariable int id, @RequestBody UserUpdateRequest body) {
@@ -54,6 +58,7 @@ public class UserController {
     return ResponseEntity.ok(userService.updateUserById(id, body));
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @PostMapping
   public ResponseEntity<UserInfoResponse> register(@RequestBody UserRegistrationRequest body) {
     logger.debug("[register] new {} is registering", User.class.getSimpleName());
