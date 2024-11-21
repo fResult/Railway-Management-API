@@ -8,11 +8,9 @@ import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
 import dev.fresult.railwayManagement.users.dtos.UserUpdateRequest;
 import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.repositories.UserRepository;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -83,11 +81,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserInfoResponse updateUserById(int id, UserUpdateRequest body) {
-    var bodyToUserUpdate = toUserUpdate(body);
+    var toUserUpdate = UserUpdateRequest.dtoToUserUpdate(body);
     var userToUpdate =
         userRepository
             .findById(id)
-            .map(bodyToUserUpdate)
+            .map(toUserUpdate)
             .orElseThrow(errorHelper.entityNotFound("updateUser", User.class, id));
     var updatedUser = userRepository.save(userToUpdate);
     logger.info("[updateUser] {}: {} is updated", User.class.getSimpleName(), updatedUser);
@@ -97,17 +95,12 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public boolean deleteUserById(int id) {
-    throw new UnsupportedOperationException("Not implemented yet");
-  }
+    var userToDelete =
+        userRepository
+            .findById(id)
+            .orElseThrow(errorHelper.entityNotFound("deleteUser", User.class, id));
+    userRepository.delete(userToDelete);
 
-  // FIXME: rename this method to be easier to understand
-  private Function<User, User> toUserUpdate(UserUpdateRequest body) {
-    return user ->
-        new User(
-            user.id(),
-            Optional.ofNullable(body.firstName()).orElse(user.firstName()),
-            Optional.ofNullable(body.lastName()).orElse(user.lastName()),
-            user.email(),
-            user.password());
+    return true;
   }
 }

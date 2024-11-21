@@ -1,0 +1,8 @@
+package dev.fresult.railwayManagement.trainTrips;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/train-trips")
+public class TrainTripController {}

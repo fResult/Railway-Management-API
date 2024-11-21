@@ -1,4 +1,4 @@
-package dev.fresult.railwayManagement.users.controllers;
+package dev.fresult.railwayManagement.users;
 
 import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
 import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
@@ -8,6 +8,7 @@ import dev.fresult.railwayManagement.users.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -49,22 +50,32 @@ public class UserController {
     return ResponseEntity.ok(user);
   }
 
-  // TODO: Protected route for logged in user
-  @PatchMapping("/{id}")
-  public ResponseEntity<UserInfoResponse> updateUserById(
-      @PathVariable int id, @RequestBody UserUpdateRequest body) {
-    logger.debug("[updateUserById] Updating {} by id: {}", User.class.getSimpleName(), id);
-
-    return ResponseEntity.ok(userService.updateUserById(id, body));
-  }
-
   // TODO: Protected route for only ADMIN and STATION_STAFF
   @PostMapping
-  public ResponseEntity<UserInfoResponse> register(@RequestBody UserRegistrationRequest body) {
+  public ResponseEntity<UserInfoResponse> register(
+      @Validated @RequestBody UserRegistrationRequest body) {
     logger.debug("[register] new {} is registering", User.class.getSimpleName());
     var registeredUser = userService.register(body);
     var registeredUserUri = URI.create(String.format("/api/users/%d", registeredUser.id()));
 
     return ResponseEntity.created(registeredUserUri).body(registeredUser);
+  }
+
+  // TODO: Protected route for logged in user
+  @PatchMapping("/{id}")
+  public ResponseEntity<UserInfoResponse> updateUserById(
+      @PathVariable int id, @Validated @RequestBody UserUpdateRequest body) {
+    logger.debug("[updateUserById] Updating {} by id: {}", User.class.getSimpleName(), id);
+
+    return ResponseEntity.ok(userService.updateUserById(id, body));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<String> deleteUserById(@PathVariable int id) {
+    logger.debug("[deleteUserById] Deleting {} by id: {}", User.class.getSimpleName(), id);
+    userService.deleteUserById(id);
+
+    return ResponseEntity.ok(
+        String.format("Delete %s [%d] successfully", User.class.getSimpleName(), id));
   }
 }
