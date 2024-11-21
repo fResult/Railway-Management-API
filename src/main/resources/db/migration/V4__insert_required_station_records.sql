@@ -7,4 +7,9 @@ VALUES
     (5, 'N8', 'Mochit', 'Bangkok, Thailand', 7),
     (6, 'E9', 'On Nut', 'Bangkok, Thailand', 8),
     (7, 'S3', 'Saphan Taksin', 'Bangkok, Thailand', 9);
-SELECT setval('stations_id_seq', 8, false);
+DO $$
+BEGIN
+    IF (SELECT last_value FROM stations_id_seq) < 8 THEN
+        PERFORM setval('stations_id_seq', 8, false);
+    END IF;
+END $$;

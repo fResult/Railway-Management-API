@@ -15,7 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-    System.out.println("securityFilterChain testtt");
     return httpSecurity
         .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
         .csrf(AbstractHttpConfigurer::disable)
@@ -27,13 +26,11 @@ public class SecurityConfig {
 
   @Bean
   public InMemoryUserDetailsManager userDetailsService() {
-    System.out.println("userDetailsService testtt");
     return new InMemoryUserDetailsManager();
   }
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    System.out.println("passwordEncoder testtt");
     return Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
   }
 }

@@ -13,11 +13,20 @@ VALUES
     (7, 'Eve', 'Joana', 'eve.j@lightningrails.com', '$argon2id$v=19$m=16384,t=2,p=1$m5O75FZ/Q4ZP7a4MeQSBSg$PspFiPmLYsLTzsISDp1rMqhbHcTid9RFEiMfPkOxekc'),
     (8, 'Frank', 'Explorer', 'frank.e@lightningrails.com', '$argon2id$v=19$m=16384,t=2,p=1$m5O75FZ/Q4ZP7a4MeQSBSg$PspFiPmLYsLTzsISDp1rMqhbHcTid9RFEiMfPkOxekc'),
     (9, 'Grace', 'Hopper', 'grace.h@lightningrails.com', '$argon2id$v=19$m=16384,t=2,p=1$m5O75FZ/Q4ZP7a4MeQSBSg$PspFiPmLYsLTzsISDp1rMqhbHcTid9RFEiMfPkOxekc');
-SELECT setval('users_id_seq', 10, false);
---DROP SEQUENCE users_id_seq CASCADE;
---CREATE SEQUENCE users_id_seq START WITH 9 INCREMENT BY 1;
---ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('users_id_seq');
+DO $$
+BEGIN
+    IF (SELECT last_value FROM users_id_seq) < 10 THEN
+        PERFORM setval('users_id_seq', 10, false);
+    END IF;
+END $$;
+
+
 
 INSERT INTO user_roles (id, user_id, role_id)
 VALUES (1, 1, 1), (2, 2, 3), (3, 3, 2), (4, 4, 2), (5, 5, 2), (6, 6, 2);
-SELECT setval('user_roles_id_seq', 7, false);
+DO $$
+BEGIN
+    IF (SELECT last_value FROM user_roles_id_seq) < 7 THEN
+        PERFORM setval('user_roles_id_seq', 7, false);
+    END IF;
+END $$;

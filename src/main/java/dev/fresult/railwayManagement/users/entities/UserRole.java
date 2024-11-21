@@ -7,5 +7,5 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table("user_roles")
 public record UserRole(
     @Id Integer id,
-    AggregateReference<User, Integer> user,
-    AggregateReference<Role, Integer> role) {}
+    AggregateReference<User, Integer> userId,
+    AggregateReference<Role, Integer> roleId) {}

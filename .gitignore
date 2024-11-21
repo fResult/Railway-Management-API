@@ -38,3 +38,6 @@ out/
 
 ### Environments ###
 .env
+
+### App Logs ###
+logs/

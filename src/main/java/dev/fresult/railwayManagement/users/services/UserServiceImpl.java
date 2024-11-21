@@ -1,5 +1,6 @@
 package dev.fresult.railwayManagement.users.services;
 
+import dev.fresult.railwayManagement.common.enums.RoleName;
 import dev.fresult.railwayManagement.common.exceptions.CredentialExistsException;
 import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
 import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,19 +20,21 @@ public class UserServiceImpl implements UserService {
   private final ErrorHelper errorHelper = new ErrorHelper(UserServiceImpl.class);
 
   private final UserRepository userRepository;
+  private final UserRoleService userRoleService;
   private final PasswordEncoder passwordEncoder;
 
-  public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+  public UserServiceImpl(UserRepository userRepository, UserRoleService userRoleService, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
-    this.passwordEncoder = passwordEncoder;
+      this.userRoleService = userRoleService;
+      this.passwordEncoder = passwordEncoder;
   }
 
   @Override
+  @Transactional
   public UserInfoResponse register(UserRegistrationRequest body) {
     logger.debug("[register] new {} is registering", User.class.getSimpleName());
-    System.out.println("register start");
+
     var isEmailExisted = userRepository.existsByEmail(body.email());
-    System.out.println("after checking email: " + isEmailExisted);
     if (isEmailExisted) {
       logger.warn(
           "[register] {} email: {} is already existed", User.class.getSimpleName(), body.email());
@@ -38,12 +42,13 @@ public class UserServiceImpl implements UserService {
     }
 
     var encryptedPassword = passwordEncoder.encode(body.password());
-    System.out.println("Password en: " + encryptedPassword);
-
     var userToRegister =
         new User(null, body.firstName(), body.lastName(), body.email(), encryptedPassword);
     var registeredUser = userRepository.save(userToRegister);
-    System.out.println("register end: " + registeredUser);
+    var addedUserRole =
+        userRoleService.saveUserRole(registeredUser.id(), RoleName.PASSENGER.getId());
+    logger.info(
+        "[register] new {}: {} is registered", User.class.getSimpleName(), registeredUser);
 
     return Optional.of(registeredUser).map(UserInfoResponse::fromUserDao).get();
   }
