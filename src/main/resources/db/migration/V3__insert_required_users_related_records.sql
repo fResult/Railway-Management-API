@@ -1,5 +1,5 @@
 INSERT INTO roles (id, name)
-VALUES (1, 'ADMIN'), (2, 'STATION_MASTER'), (3, 'PASSENGER');
+VALUES (1, 'ADMIN'), (2, 'STATION_STAFF'), (3, 'PASSENGER');
 SELECT setval('roles_id_seq', 4, false);
 
 INSERT INTO users (id, first_name, last_name, email, password)
@@ -23,7 +23,7 @@ END $$;
 
 
 INSERT INTO user_roles (id, user_id, role_id)
-VALUES (1, 1, 1), (2, 2, 3), (3, 3, 2), (4, 4, 2), (5, 5, 2), (6, 6, 2);
+VALUES (1, 1, 1), (2, 2, 3), (3, 3, 1), (4, 3, 2), (5, 4, 2), (6, 5, 2), (7, 6, 2), (8, 7, 2), (9, 8, 2), (10, 9, 2);
 DO $$
 BEGIN
     IF (SELECT last_value FROM user_roles_id_seq) < 7 THEN

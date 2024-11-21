@@ -1,5 +1,6 @@
 package dev.fresult.railwayManagement.common;
 
+import dev.fresult.railwayManagement.common.exceptions.CredentialExistsException;
 import dev.fresult.railwayManagement.common.exceptions.EntityNotFoundException;
 import dev.fresult.railwayManagement.common.exceptions.ValidationException;
 import java.util.HashMap;
@@ -49,6 +50,14 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex) {
     var detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     logger.info("Entity not found: {}", ex.getMessage());
+
+    return ResponseEntity.of(detail).build();
+  }
+
+  @ExceptionHandler(CredentialExistsException.class)
+  protected ResponseEntity<?> handleCredentialExistsException(CredentialExistsException ex) {
+    var detail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    logger.info("Credential exists: {}", ex.getMessage());
 
     return ResponseEntity.of(detail).build();
   }
