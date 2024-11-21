@@ -7,7 +7,7 @@ import org.springframework.data.jdbc.core.mapping.AggregateReference;
 
 public record StationUpdateRequest(String code, String name, String location, Integer contactId) {
 
-  public static Function<Station, Station> dtoToUserUpdate(StationUpdateRequest body) {
+  public static Function<Station, Station> dtoToStationUpdate(StationUpdateRequest body) {
 
     return station -> {
       var existingStationContactId =

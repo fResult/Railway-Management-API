@@ -54,14 +54,20 @@ public class StationServiceImpl implements StationService {
   }
 
   @Override
-  public StationResponse createStation(StationRequest stationRequest) {
-    throw new UnsupportedOperationException("Not implemented yet");
+  public StationResponse createStation(StationCreationRequest body) {
+    logger.debug("[createStation] Creating new {}", Station.class.getSimpleName());
+    var toStationCreate = StationCreationRequest.dtoToStationCreate(body);
+    var createdStation = stationRepository.save(toStationCreate);
+    logger.info(
+        "[createStation] New {} is created: {}", Station.class.getSimpleName(), createdStation);
+
+    return toResponseWithContact(createdStation);
   }
 
   @Override
   public StationResponse updateStationById(int id, StationUpdateRequest body) {
     logger.debug("[updateStationById] Updating {} id: [{}]", Station.class.getSimpleName(), id);
-    var toStationUpdate = StationUpdateRequest.dtoToUserUpdate(body);
+    var toStationUpdate = StationUpdateRequest.dtoToStationUpdate(body);
     var stationToUpdate =
         stationRepository
             .findById(id)
@@ -72,7 +78,7 @@ public class StationServiceImpl implements StationService {
     logger.info(
         "[updateStationById] {} is updated: {}", Station.class.getSimpleName(), updatedStation);
 
-    return Optional.of(updatedStation).map(this::toResponseWithContact).get();
+    return toResponseWithContact(updatedStation);
   }
 
   @Override
@@ -80,7 +86,8 @@ public class StationServiceImpl implements StationService {
     logger.debug(
         "[deleteStationById] Deleting {} with id: {}", StationResponse.class.getSimpleName(), id);
     stationRepository.deleteById(id);
-    logger.info("[deleteStationById] {} id [{}] is deleted", StationResponse.class.getSimpleName(), id);
+    logger.info(
+        "[deleteStationById] {} id [{}] is deleted", StationResponse.class.getSimpleName(), id);
 
     return true;
   }

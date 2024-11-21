@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
         userRoleService.saveUserRole(registeredUser.id(), RoleName.PASSENGER.getId());
     logger.info("[register] new {}: {} is registered", User.class.getSimpleName(), registeredUser);
 
-    return Optional.of(registeredUser).map(UserInfoResponse::fromUserDao).get();
+    return UserInfoResponse.fromUserDao(registeredUser);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public List<UserInfoResponse> getUsersByIds(Collection<Integer> ids) {
-    return  userRepository.findByIdIn(ids).stream().map(UserInfoResponse::fromUserDao).toList();
+    return userRepository.findByIdIn(ids).stream().map(UserInfoResponse::fromUserDao).toList();
   }
 
   @Override
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     var updatedUser = userRepository.save(userToUpdate);
     logger.info("[updateUser] {}: {} is updated", User.class.getSimpleName(), updatedUser);
 
-    return Optional.of(updatedUser).map(UserInfoResponse::fromUserDao).get();
+    return UserInfoResponse.fromUserDao(updatedUser);
   }
 
   @Override
@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
         userRepository
             .findById(id)
             .orElseThrow(errorHelper.entityNotFound("deleteUser", User.class, id));
+
     userRepository.delete(userToDelete);
 
     return true;
