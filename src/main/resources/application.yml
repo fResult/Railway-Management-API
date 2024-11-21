@@ -1,0 +1,29 @@
+server:
+  shutdown: graceful
+  port: 8888
+
+spring:
+  application:
+    name: "Railway Management API"
+  docker:
+    compose:
+      enabled: true
+  threads:
+    virtual:
+      enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
+  # DB Connection - PostgreSQL
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/railway_management}
+    username: ${DATABASE_USER:railmaster}
+    password: ${DATABASE_PASSWORD:secret}
+    hikari:
+      maximum-pool-size: ${POOL_SIZE:10}
+  # DB Migration
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    baseline-on-migrate: ${IS_FLYWAY_BASELINE_ON_MIGRATE:true}
+    validate-on-migrate: ${IS_FLYWAY_VALIDATE_ON_MIGRATE:true}
+    locations: classpath:db/migration

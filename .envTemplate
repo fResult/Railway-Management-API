@@ -1,0 +1,3 @@
+POSTGRES_DB=railway_management
+POSTGRES_USER=railmaster
+POSTGRES_PASSWORD=secret
