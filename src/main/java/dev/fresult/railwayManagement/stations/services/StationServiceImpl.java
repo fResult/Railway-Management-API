@@ -32,8 +32,10 @@ public class StationServiceImpl implements StationService {
 
   @Override
   public List<StationResponse> getStations() {
+    logger.debug("[getStations] Getting all {}", StationResponse.class.getSimpleName());
     var stations = stationRepository.findAll();
     var contactIds = buildStationContactIds(stations);
+    /* NOTE: Use `getUsersByIds` and HashMap to prevent 1+N issue. */
     var contacts = userService.getUsersByIds(contactIds);
     var contactIdToContactMap =
         contacts.stream().collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
@@ -44,7 +46,11 @@ public class StationServiceImpl implements StationService {
 
   @Override
   public StationResponse getStationById(int id) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    logger.debug("[getStationById] Getting {} id [{}]", StationResponse.class.getSimpleName(), id);
+    return stationRepository
+        .findById(id)
+        .map(this::toResponseWithContact)
+        .orElseThrow(errorHelper.entityNotFound("getStationById", Station.class, id));
   }
 
   @Override
