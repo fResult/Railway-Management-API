@@ -5,20 +5,29 @@ import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
 import dev.fresult.railwayManagement.users.entities.User;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 public record StationResponse(
     int id, String code, String name, String location, UserInfoResponse contactInfo) {
+  public static StationResponse fromStationDao(Station station, UserInfoResponse contact) {
+    return new StationResponse(
+        station.id(),
+        station.code(),
+        station.name(),
+        station.location(),
+        Optional.of(contact).orElse(null));
+  }
+
   public static Function<Station, StationResponse> fromStationDaoWithContactMap(
       Map<Integer, UserInfoResponse> contactMap) {
-    return station -> {
-      return new StationResponse(
-          station.id(),
-          station.code(),
-          station.name(),
-          station.location(),
-          contactMap.get(station.contactId().getId()));
-    };
+    return station ->
+        new StationResponse(
+            station.id(),
+            station.code(),
+            station.name(),
+            station.location(),
+            contactMap.get(station.contactId().getId()));
   }
 
   public static Function<User, StationResponse> withContactInfo(StationResponse self) {

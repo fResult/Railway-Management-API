@@ -19,5 +19,13 @@ public class ErrorHelper {
       return new EntityNotFoundException(
           String.format("%s id [%s] not found", entityClass.getSimpleName(), id));
     };
+
+  }
+
+  public Supplier<RuntimeException> runtimeError(String methodName, String message) {
+    return () -> {
+      logger.error("[{}] {}", methodName, message);
+      return new RuntimeException(message);
+    };
   }
 }
