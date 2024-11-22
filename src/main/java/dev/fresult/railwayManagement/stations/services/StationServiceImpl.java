@@ -39,6 +39,12 @@ public class StationServiceImpl implements StationService {
 
     return stations.stream().map(toResponse).toList();
   }
+
+  @Override
+  public List<StationResponse> getStationsByIds(Collection<Integer> ids) {
+    logger.debug("[getStationsByIds] Getting all {} by ids", StationResponse.class.getSimpleName());
+    var stations = stationRepository.findAllById(ids);
+    var contactIdToContactMap = buildContactIdToContactMap(stations);
     var toResponse = StationResponse.fromStationDaoWithContactMap(contactIdToContactMap);
 
     return stations.stream().map(toResponse).toList();

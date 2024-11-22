@@ -1,6 +1,7 @@
 package dev.fresult.railwayManagement.trainTrips;
 
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripCreationRequest;
+import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripResponse;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripUpdateRequest;
 import dev.fresult.railwayManagement.trainTrips.services.TrainTripService;
 import jakarta.validation.constraints.Min;
@@ -26,7 +27,7 @@ public class TrainTripController {
   }
 
   @GetMapping
-  public ResponseEntity<List<TrainTrip>> getTrainTrips(
+  public ResponseEntity<List<TrainTripResponse>> getTrainTrips(
       @Min(1) @RequestParam(name = "from", required = false) Integer originStationId,
       @Min(1) @RequestParam(name = "to", required = false) Integer destinationStationId) {
     logger.debug("[getTrainTrips] Getting all {}s", TrainTrip.class.getSimpleName());
@@ -35,14 +36,14 @@ public class TrainTripController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<TrainTrip> getTrainTripById(@Min(1) @PathVariable int id) {
+  public ResponseEntity<TrainTripResponse> getTrainTripById(@Min(1) @PathVariable int id) {
     logger.debug("[getTrainTripById] Getting {} by id [{}]", TrainTrip.class.getSimpleName(), id);
 
     return ResponseEntity.ok(trainTripService.getTrainTripById(id));
   }
 
   @PostMapping
-  public ResponseEntity<TrainTrip> createTrainTrip(
+  public ResponseEntity<TrainTripResponse> createTrainTrip(
       @Validated @RequestBody TrainTripCreationRequest body) {
     logger.debug("[createTrainTrip] Creating new {}", TrainTrip.class.getSimpleName());
     var createdTrainTrip = trainTripService.createTrainTrip(body);
@@ -52,7 +53,7 @@ public class TrainTripController {
   }
 
   @PatchMapping("/{id}")
-  public ResponseEntity<TrainTrip> updateTrainTripById(
+  public ResponseEntity<TrainTripResponse> updateTrainTripById(
       @Min(1) @PathVariable int id, @Validated @RequestBody TrainTripUpdateRequest body) {
     logger.debug(
         "[updateTrainTripById] Updating {} by id [{}]", TrainTrip.class.getSimpleName(), id);

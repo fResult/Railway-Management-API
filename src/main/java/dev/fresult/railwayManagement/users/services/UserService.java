@@ -9,11 +9,11 @@ import java.util.List;
 public interface UserService {
   List<UserInfoResponse> getUsers();
 
+  List<UserInfoResponse> getUsersByIds(Collection<Integer> ids);
+
   UserInfoResponse getMyUserInfo();
 
   UserInfoResponse getUserById(int id);
-
-  List<UserInfoResponse> getUsersByIds(Collection<Integer> ids);
 
   UserInfoResponse register(UserRegistrationRequest body);
 

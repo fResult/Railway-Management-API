@@ -1,19 +1,18 @@
 package dev.fresult.railwayManagement.trainTrips.services;
 
-import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripCreationRequest;
+import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripResponse;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripUpdateRequest;
-
 import java.util.List;
 
 public interface TrainTripService {
-  List<TrainTrip> getTrainTrips(Integer originStationId, Integer destinationStationId);
+  List<TrainTripResponse> getTrainTrips(Integer originStationId, Integer destinationStationId);
 
-  TrainTrip getTrainTripById(int trainTripId);
+  TrainTripResponse getTrainTripById(int trainTripId);
 
-  TrainTrip createTrainTrip(TrainTripCreationRequest body);
+  TrainTripResponse createTrainTrip(TrainTripCreationRequest body);
 
-  TrainTrip updateTrainTripById(int id, TrainTripUpdateRequest body);
+  TrainTripResponse updateTrainTripById(int id, TrainTripUpdateRequest body);
 
   boolean deleteTrainTripById(int id);
 }
