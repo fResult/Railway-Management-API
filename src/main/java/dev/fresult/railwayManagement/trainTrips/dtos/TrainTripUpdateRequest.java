@@ -3,11 +3,10 @@ package dev.fresult.railwayManagement.trainTrips.dtos;
 import dev.fresult.railwayManagement.common.helpers.AggregateReferenceToUpdateBuilder;
 import dev.fresult.railwayManagement.stations.Station;
 import dev.fresult.railwayManagement.trainTrips.TrainTrip;
-import org.springframework.data.jdbc.core.mapping.AggregateReference;
-
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
+import org.springframework.data.jdbc.core.mapping.AggregateReference;
 
 public record TrainTripUpdateRequest(
     String trainNumber,
@@ -18,14 +17,12 @@ public record TrainTripUpdateRequest(
     Double price) {
   public static Function<TrainTrip, TrainTrip> dtoToTrainTripUpdate(TrainTripUpdateRequest body) {
     return trainTrip -> {
-      AggregateReference<Station, Integer> originStationIdToUpdate =
+      var originStationIdToUpdate =
           AggregateReferenceToUpdateBuilder.build(
-              body.originalStationId(), trainTrip.originStationId().getId(), "origin");
-      AggregateReference<Station, Integer> destinationStationIdToUpdate =
+              body.originalStationId(), trainTrip.originStationId());
+      var destinationStationIdToUpdate =
           AggregateReferenceToUpdateBuilder.build(
-              body.destinationStationId(),
-              trainTrip.destinationStationId().getId(),
-              "destination");
+              body.destinationStationId(), trainTrip.destinationStationId());
 
       return new TrainTrip(
           trainTrip.id(),
