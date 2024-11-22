@@ -11,7 +11,7 @@ public record StationUpdateRequest(String code, String name, String location, In
 
     return station -> {
       var contactIdToUpdate =
-          AggregateReferenceToUpdateBuilder.build(body.contactId(), station.contactId());
+          AggregateReferenceToUpdateBuilder.build(body.contactId(), station.contactId(), "contact");
 
       return new Station(
           station.id(),

@@ -19,10 +19,10 @@ public record TrainTripUpdateRequest(
     return trainTrip -> {
       var originStationIdToUpdate =
           AggregateReferenceToUpdateBuilder.build(
-              body.originalStationId(), trainTrip.originStationId());
+              body.originalStationId(), trainTrip.originStationId(), "original station");
       var destinationStationIdToUpdate =
           AggregateReferenceToUpdateBuilder.build(
-              body.destinationStationId(), trainTrip.destinationStationId());
+              body.destinationStationId(), trainTrip.destinationStationId(), "destination station");
 
       return new TrainTrip(
           trainTrip.id(),
