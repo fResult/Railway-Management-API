@@ -1,6 +1,9 @@
 package dev.fresult.railwayManagement.trainTrips;
 
+import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripCreationRequest;
+import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripUpdateRequest;
 import dev.fresult.railwayManagement.trainTrips.services.TrainTripService;
+import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,15 +26,43 @@ public class TrainTripController {
   public ResponseEntity<List<TrainTrip>> getTrainTrips(
       @RequestParam(name = "from", required = false) Integer originStationId,
       @RequestParam(name = "to", required = false) Integer destinationStationId) {
-    logger.debug("[getTrainTrips] Getting all train trips");
+    logger.debug("[getTrainTrips] Getting all {}s", TrainTrip.class.getSimpleName());
 
     return ResponseEntity.ok(trainTripService.getTrainTrips(originStationId, destinationStationId));
   }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<TrainTrip> getTrainTripById(@PathVariable int id) {
+    logger.debug("[getTrainTripById] Getting {} by id [{}]", TrainTrip.class.getSimpleName(), id);
+
+    return ResponseEntity.ok(trainTripService.getTrainTripById(id));
+  }
+
+  @PostMapping
+  public ResponseEntity<TrainTrip> createTrainTrip(@RequestBody TrainTripCreationRequest body) {
+    logger.debug("[createTrainTrip] Creating new {}", TrainTrip.class.getSimpleName());
+    var createdTrainTrip = trainTripService.createTrainTrip(body);
+    var uri = URI.create(String.format("/api/train-trips/%d", createdTrainTrip.id()));
+
+    return ResponseEntity.created(uri).body(createdTrainTrip);
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<TrainTrip> updateTrainTripById(
+      @PathVariable int id, @RequestBody TrainTripUpdateRequest body) {
+    logger.debug(
+        "[updateTrainTripById] Updating {} by id [{}]", TrainTrip.class.getSimpleName(), id);
+
+    return ResponseEntity.ok(trainTripService.updateTrainTripById(id, body));
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteTrainTripById(@PathVariable int id) {
-    logger.debug("[deleteTrainTripById] Deleting train trip by id [{}]", id);
+    logger.debug(
+        "[deleteTrainTripById] Deleting {} by id [{}]", TrainTrip.class.getSimpleName(), id);
     trainTripService.deleteTrainTripById(id);
 
-    return ResponseEntity.ok("Train trip deleted successfully");
+    return ResponseEntity.ok(
+        String.format("Delete %s by id [%d] successfully", TrainTrip.class.getSimpleName(), id));
   }
 }
