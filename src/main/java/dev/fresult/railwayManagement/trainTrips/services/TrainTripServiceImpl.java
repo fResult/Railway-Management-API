@@ -1,12 +1,12 @@
 package dev.fresult.railwayManagement.trainTrips.services;
 
 import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
+import dev.fresult.railwayManagement.stations.services.StationService;
 import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import dev.fresult.railwayManagement.trainTrips.TrainTripRepository;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripCreationRequest;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripUpdateRequest;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,9 +17,11 @@ public class TrainTripServiceImpl implements TrainTripService {
   private final ErrorHelper errorHelper = new ErrorHelper(TrainTripServiceImpl.class);
 
   private final TrainTripRepository trainTripRepository;
+  private final StationService stationService;
 
-  public TrainTripServiceImpl(TrainTripRepository trainTripRepository) {
+  public TrainTripServiceImpl(TrainTripRepository trainTripRepository, StationService stationService) {
     this.trainTripRepository = trainTripRepository;
+      this.stationService = stationService;
   }
 
   // TODO: Inject the relation resources to the response, make them concurrent
@@ -31,20 +33,7 @@ public class TrainTripServiceImpl implements TrainTripService {
         originStationId,
         destinationStationId);
 
-    var optOriginStationId = Optional.ofNullable(originStationId);
-    var optDestinationStationId = Optional.ofNullable(destinationStationId);
-
-    if (optOriginStationId.isPresent() && optDestinationStationId.isPresent())
-      return trainTripRepository.findByOriginStationIdAndDestinationStationId(
-          originStationId, destinationStationId);
-
-    if (optOriginStationId.isPresent())
-      return trainTripRepository.findByOriginStationId(originStationId);
-
-    if (optDestinationStationId.isPresent())
-      return trainTripRepository.findByDestinationStationId(destinationStationId);
-
-    return trainTripRepository.findAll();
+    return trainTripRepository.findAllWithFilters(originStationId, destinationStationId);
   }
 
   // TODO: Inject the relation resources to the response, make them concurrent
