@@ -58,17 +58,8 @@ public class StationServiceImpl implements StationService {
   public StationResponse createStation(StationCreationRequest body) {
     logger.debug("[createStation] Creating new {}", Station.class.getSimpleName());
     var stationToCreate = StationCreationRequest.dtoToStationCreate(body);
-    var isStationCodeExisted = stationRepository.existsByCode(stationToCreate.code());
-    if (isStationCodeExisted) {
-      logger.warn(
-          "[createStation] {} code: {} is already existed",
-          Station.class.getSimpleName(),
-          stationToCreate.code());
-      throw new DuplicateUniqueFieldException(
-          String.format(
-              "%s code [%s] is already existed",
-              Station.class.getSimpleName(), stationToCreate.code()));
-    }
+    throwExceptionIfDuplicateCode(stationToCreate.code(), "createStation");
+
     var createdStation = stationRepository.save(stationToCreate);
     logger.info(
         "[createStation] New {} is created: {}", Station.class.getSimpleName(), createdStation);
@@ -85,6 +76,9 @@ public class StationServiceImpl implements StationService {
             .findById(id)
             .map(toStationUpdate)
             .orElseThrow(errorHelper.entityNotFound("getStationById", Station.class, id));
+
+    if (Optional.ofNullable(body.code()).isPresent())
+      throwExceptionIfDuplicateCode(stationToUpdate.code(), "updateStationById");
 
     var updatedStation = stationRepository.save(stationToUpdate);
     logger.info(
@@ -121,5 +115,15 @@ public class StationServiceImpl implements StationService {
             .orElseThrow(errorHelper.runtimeError("getStationById", "Contact Id is null"));
     var contact = userService.getUserById(contactId);
     return StationResponse.fromStationDao(station, contact);
+  }
+
+  private void throwExceptionIfDuplicateCode(String code, String methodName) {
+    var isStationCodeExisted = stationRepository.existsByCode(code);
+    if (isStationCodeExisted) {
+      logger.warn(
+          "[{}] {} code [{}] is already existed", methodName, Station.class.getSimpleName(), code);
+      throw new DuplicateUniqueFieldException(
+          String.format("%s code [%s] is already existed", Station.class.getSimpleName(), code));
+    }
   }
 }

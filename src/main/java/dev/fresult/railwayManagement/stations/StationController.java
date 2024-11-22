@@ -4,6 +4,7 @@ import dev.fresult.railwayManagement.stations.dtos.StationCreationRequest;
 import dev.fresult.railwayManagement.stations.dtos.StationResponse;
 import dev.fresult.railwayManagement.stations.dtos.StationUpdateRequest;
 import dev.fresult.railwayManagement.stations.services.StationService;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/stations")
 public class StationController {
@@ -30,13 +32,14 @@ public class StationController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<StationResponse> getStationById(@PathVariable int id) {
+  public ResponseEntity<StationResponse> getStationById(@Min(1) @PathVariable int id) {
     logger.debug("[getStationById] Getting {} by id [{}]", Station.class.getSimpleName(), id);
     return ResponseEntity.ok(stationService.getStationById(id));
   }
 
   @PostMapping
-  public ResponseEntity<StationResponse> createStation(@Validated @RequestBody StationCreationRequest body) {
+  public ResponseEntity<StationResponse> createStation(
+      @Validated @RequestBody StationCreationRequest body) {
     logger.debug("[createStation] Creating new {}", Station.class.getSimpleName());
     var createdStation = stationService.createStation(body);
     var uri = URI.create(String.format("/api/stations/%d", createdStation.id()));
@@ -46,7 +49,7 @@ public class StationController {
 
   @PatchMapping("/{id}")
   public ResponseEntity<StationResponse> updateById(
-      @PathVariable int id, @Validated @RequestBody StationUpdateRequest body) {
+      @Min(1) @PathVariable int id, @Validated @RequestBody StationUpdateRequest body) {
     logger.debug("[updateById] Updating {} by id [{}]", Station.class.getSimpleName(), id);
     var updatedStation = stationService.updateStationById(id, body);
 
@@ -54,7 +57,7 @@ public class StationController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteById(@PathVariable int id) {
+  public ResponseEntity<String> deleteById(@Min(1) @PathVariable int id) {
     logger.debug("[deleteById] Deleting {} by id: {}", Station.class.getSimpleName(), id);
     stationService.deleteStationById(id);
 

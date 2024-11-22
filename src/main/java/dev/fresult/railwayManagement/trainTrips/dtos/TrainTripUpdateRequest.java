@@ -1,20 +1,22 @@
 package dev.fresult.railwayManagement.trainTrips.dtos;
 
 import dev.fresult.railwayManagement.common.helpers.AggregateReferenceToUpdateBuilder;
+import dev.fresult.railwayManagement.common.validations.NotEmptyIfPresent;
 import dev.fresult.railwayManagement.stations.Station;
 import dev.fresult.railwayManagement.trainTrips.TrainTrip;
+import jakarta.validation.constraints.Min;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 
 public record TrainTripUpdateRequest(
-    String trainNumber,
+    @NotEmptyIfPresent String trainNumber,
     Instant departureTime,
     Instant arrivalTime,
-    Integer originalStationId,
-    Integer destinationStationId,
-    Double price) {
+    @Min(1) Integer originalStationId,
+    @Min(1) Integer destinationStationId,
+    @Min(1) Double price) {
   public static Function<TrainTrip, TrainTrip> dtoToTrainTripUpdate(TrainTripUpdateRequest body) {
     return trainTrip -> {
       var originStationIdToUpdate =

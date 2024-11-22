@@ -5,6 +5,8 @@ import dev.fresult.railwayManagement.common.exceptions.DuplicateUniqueFieldExcep
 import dev.fresult.railwayManagement.common.exceptions.EntityNotFoundException;
 import dev.fresult.railwayManagement.common.exceptions.ValidationException;
 import java.util.HashMap;
+
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice
@@ -35,6 +38,34 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
               propertyToError.put(error.getField(), error.getDefaultMessage());
             });
     detail.setProperty("arguments", propertyToError);
+
+    return ResponseEntity.of(detail).build();
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  protected ResponseEntity<?> handleConstraintViolation(ConstraintViolationException ex) {
+    var detail =
+        ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid request parameters");
+
+    var errors = new HashMap<String, Object>();
+    ex.getConstraintViolations()
+        .forEach(
+            violation -> {
+              String path = violation.getPropertyPath().toString();
+              String field = path.substring(path.lastIndexOf('.') + 1);
+              errors.put(field, violation.getMessage());
+            });
+
+    detail.setProperty("arguments", errors);
+    logger.error("Constraint violation: {}", errors);
+
+    return ResponseEntity.of(detail).build();
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<Object> handleMethodArgumentTypeMismatch(
+      MethodArgumentTypeMismatchException ex, WebRequest request) {
+    var detail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
 
     return ResponseEntity.of(detail).build();
   }

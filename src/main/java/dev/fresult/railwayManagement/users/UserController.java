@@ -5,6 +5,7 @@ import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
 import dev.fresult.railwayManagement.users.dtos.UserUpdateRequest;
 import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.services.UserService;
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController()
 @RequestMapping("/api/users")
 public class UserController {
@@ -42,7 +44,7 @@ public class UserController {
 
   // TODO: Protected route for only ADMIN and STATION_STAFF
   @GetMapping("/{id}")
-  public ResponseEntity<UserInfoResponse> getUserById(@PathVariable int id) {
+  public ResponseEntity<UserInfoResponse> getUserById(@Min(1) @PathVariable int id) {
     logger.debug("[getUserById] Getting {} by id [{}]", User.class.getSimpleName(), id);
     var user = userService.getUserById(id);
 
@@ -63,14 +65,14 @@ public class UserController {
   // TODO: Protected route for logged in user
   @PatchMapping("/{id}")
   public ResponseEntity<UserInfoResponse> updateUserById(
-      @PathVariable int id, @Validated @RequestBody UserUpdateRequest body) {
+      @Min(1) @PathVariable int id, @Validated @RequestBody UserUpdateRequest body) {
     logger.debug("[updateUserById] Updating {} by id [{}]", User.class.getSimpleName(), id);
 
     return ResponseEntity.ok(userService.updateUserById(id, body));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> deleteUserById(@PathVariable int id) {
+  public ResponseEntity<String> deleteUserById(@Min(1) @PathVariable int id) {
     logger.debug("[deleteUserById] Deleting {} by id: {}", User.class.getSimpleName(), id);
     userService.deleteUserById(id);
 
