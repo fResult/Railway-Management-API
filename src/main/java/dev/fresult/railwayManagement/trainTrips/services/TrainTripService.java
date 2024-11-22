@@ -13,7 +13,7 @@ public interface TrainTripService {
 
   TrainTrip createTrainTrip(TrainTripCreationRequest body);
 
-  TrainTrip updateTrainTripById(TrainTripUpdateRequest body);
+  TrainTrip updateTrainTripById(int id, TrainTripUpdateRequest body);
 
   boolean deleteTrainTripById(int id);
 }

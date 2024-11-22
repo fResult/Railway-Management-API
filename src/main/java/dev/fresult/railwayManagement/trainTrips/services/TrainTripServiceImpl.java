@@ -56,7 +56,7 @@ public class TrainTripServiceImpl implements TrainTripService {
   }
 
   @Override
-  public TrainTrip updateTrainTripById(TrainTripUpdateRequest body) {
+  public TrainTrip updateTrainTripById(int id, TrainTripUpdateRequest body) {
     throw new UnsupportedOperationException("Not implemented yet");
   }
 
