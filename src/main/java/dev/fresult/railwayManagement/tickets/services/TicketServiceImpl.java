@@ -25,7 +25,7 @@ public class TicketServiceImpl implements TicketService {
   public List<Ticket> getTickets(Integer passengerId) {
     logger.debug("[getTickets] Getting all {}s", Ticket.class.getSimpleName());
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    return ticketRepository.findAllWithFilters(passengerId);
   }
 
   @Override
