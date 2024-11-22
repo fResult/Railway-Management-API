@@ -32,7 +32,9 @@ public class TicketServiceImpl implements TicketService {
   public Ticket getTicketById(int ticketId) {
     logger.debug("[getTicketById] Getting {} id [{}]", Ticket.class.getSimpleName(), ticketId);
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    return ticketRepository
+        .findById(ticketId)
+        .orElseThrow(errorHelper.entityNotFound("getTicketById", Ticket.class, ticketId));
   }
 
   @Override
