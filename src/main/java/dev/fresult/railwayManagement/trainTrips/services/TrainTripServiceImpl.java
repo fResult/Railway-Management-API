@@ -67,7 +67,7 @@ public class TrainTripServiceImpl implements TrainTripService {
     var createdTrainTrip = trainTripRepository.save(trainTripToCreate);
 
     logger.info(
-        "[createTrainTrip] New {}: {} is created",
+        "[createTrainTrip] New {} is created: {}",
         TrainTrip.class.getSimpleName(),
         createdTrainTrip);
 

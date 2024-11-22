@@ -62,7 +62,7 @@ public class StationServiceImpl implements StationService {
 
     var createdStation = stationRepository.save(stationToCreate);
     logger.info(
-        "[createStation] New {}: {} is created", Station.class.getSimpleName(), createdStation);
+        "[createStation] New {} is created: {}", Station.class.getSimpleName(), createdStation);
 
     return toResponseWithContact(createdStation);
   }
