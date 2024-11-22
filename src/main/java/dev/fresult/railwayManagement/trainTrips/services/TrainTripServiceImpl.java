@@ -1,5 +1,6 @@
 package dev.fresult.railwayManagement.trainTrips.services;
 
+import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
 import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import dev.fresult.railwayManagement.trainTrips.TrainTripRepository;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripCreationRequest;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Service
 public class TrainTripServiceImpl implements TrainTripService {
   private final Logger logger = LoggerFactory.getLogger(TrainTripServiceImpl.class);
+  private final ErrorHelper errorHelper = new ErrorHelper(TrainTripServiceImpl.class);
 
   private final TrainTripRepository trainTripRepository;
 
@@ -47,7 +49,12 @@ public class TrainTripServiceImpl implements TrainTripService {
 
   @Override
   public TrainTrip getTrainTripById(int trainTripId) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    logger.debug(
+        "[getTrainTripById] Getting {} by id: {}", TrainTrip.class.getSimpleName(), trainTripId);
+
+    return trainTripRepository
+        .findById(trainTripId)
+        .orElseThrow(errorHelper.entityNotFound("getTrainTripById", TrainTrip.class, trainTripId));
   }
 
   @Override
