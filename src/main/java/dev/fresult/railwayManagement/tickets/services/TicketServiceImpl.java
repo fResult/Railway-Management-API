@@ -44,7 +44,7 @@ public class TicketServiceImpl implements TicketService {
     var ticketToCreate = TicketCreationRequest.dtoToTicketCreate(body);
     var createdTicket = ticketRepository.save(ticketToCreate);
     logger.info(
-        "[createTicket] New {}: {} is created", Ticket.class.getSimpleName(), createdTicket);
+        "[createTicket] New {} is created: {}", Ticket.class.getSimpleName(), createdTicket);
 
     return createdTicket;
   }
@@ -53,7 +53,17 @@ public class TicketServiceImpl implements TicketService {
   public Ticket updateTicketById(int id, TicketUpdateRequest body) {
     logger.debug("[updateTicketById] Updating {} id [{}]", Ticket.class.getSimpleName(), id);
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    var toTicketUpdate = TicketUpdateRequest.dtoToTicketUpdate(body);
+    var ticketToUpdate =
+        ticketRepository
+            .findById(id)
+            .orElseThrow(errorHelper.entityNotFound("updateTicketById", Ticket.class, id));
+
+    var updatedTicket = ticketRepository.save(toTicketUpdate.apply(ticketToUpdate));
+    logger.info(
+        "[updateTicketById] {} is updated: {}", Ticket.class.getSimpleName(), updatedTicket);
+
+    return updatedTicket;
   }
 
   @Override
