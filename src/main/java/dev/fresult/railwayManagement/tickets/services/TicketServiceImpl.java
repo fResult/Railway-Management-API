@@ -51,33 +51,6 @@ public class TicketServiceImpl implements TicketService {
     return tickets.stream().map(toResponse).toList();
   }
 
-  private Set<Integer> buildPassengerIds(List<Ticket> tickets) {
-    return tickets.stream().map(ticket -> ticket.passengerId().getId()).collect(Collectors.toSet());
-  }
-
-  private Set<Integer> buildTrainTripIds(List<Ticket> tickets) {
-    return tickets.stream().map(ticket -> ticket.trainTripId().getId()).collect(Collectors.toSet());
-  }
-
-  private Map<Integer, UserInfoResponse> buildPassengerIdToPassengerMap(List<Ticket> tickets) {
-    var passengerIds = buildPassengerIds(tickets);
-    /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
-    var ticketPassengers = userService.getUsersByIds(passengerIds);
-
-    return ticketPassengers.stream()
-        .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
-  }
-
-  private Map<Integer, TrainTripResponse> buildTrainTripIdToTrainTripMap(List<Ticket> tickets) {
-    var trainTripIds = buildTrainTripIds(tickets);
-
-    /* NOTE: Use `getTrainTripsByIds` and hash table to prevent 1+N issue. */
-    var ticketTrainTrips = trainTripService.getTrainTripsByIds(trainTripIds);
-
-    return ticketTrainTrips.stream()
-        .collect(Collectors.toMap(TrainTripResponse::id, Function.identity()));
-  }
-
   @Override
   public Ticket getTicketById(int ticketId) {
     logger.debug("[getTicketById] Getting {} id [{}]", Ticket.class.getSimpleName(), ticketId);
@@ -129,5 +102,32 @@ public class TicketServiceImpl implements TicketService {
     logger.info("[deleteTicketById] {} id [{}] is deleted", Ticket.class.getSimpleName(), id);
 
     return true;
+  }
+
+  private Set<Integer> buildPassengerIds(List<Ticket> tickets) {
+    return tickets.stream().map(ticket -> ticket.passengerId().getId()).collect(Collectors.toSet());
+  }
+
+  private Set<Integer> buildTrainTripIds(List<Ticket> tickets) {
+    return tickets.stream().map(ticket -> ticket.trainTripId().getId()).collect(Collectors.toSet());
+  }
+
+  private Map<Integer, UserInfoResponse> buildPassengerIdToPassengerMap(List<Ticket> tickets) {
+    var passengerIds = buildPassengerIds(tickets);
+    /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
+    var ticketPassengers = userService.getUsersByIds(passengerIds);
+
+    return ticketPassengers.stream()
+        .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
+  }
+
+  private Map<Integer, TrainTripResponse> buildTrainTripIdToTrainTripMap(List<Ticket> tickets) {
+    var trainTripIds = buildTrainTripIds(tickets);
+
+    /* NOTE: Use `getTrainTripsByIds` and hash table to prevent 1+N issue. */
+    var ticketTrainTrips = trainTripService.getTrainTripsByIds(trainTripIds);
+
+    return ticketTrainTrips.stream()
+        .collect(Collectors.toMap(TrainTripResponse::id, Function.identity()));
   }
 }
