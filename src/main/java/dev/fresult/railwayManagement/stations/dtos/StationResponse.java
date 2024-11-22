@@ -29,6 +29,7 @@ public record StationResponse(
             contactMap.get(station.contactId().getId()));
   }
 
+  // TODO: Remove it if not used
   public static Function<User, StationResponse> withContactInfo(StationResponse self) {
     return contact ->
         new StationResponse(

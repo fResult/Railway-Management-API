@@ -35,11 +35,12 @@ public class StationServiceImpl implements StationService {
   public List<StationResponse> getStations() {
     logger.debug("[getStations] Getting all {}", StationResponse.class.getSimpleName());
     var stations = stationRepository.findAll();
-    var contactIds = buildStationContactIds(stations);
-    /* NOTE: Use `getUsersByIds` and HashMap to prevent 1+N issue. */
-    var contacts = userService.getUsersByIds(contactIds);
+    var stationContactIds = buildStationContactIds(stations);
+    /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
+    var stationContacts = userService.getUsersByIds(stationContactIds);
     var contactIdToContactMap =
-        contacts.stream().collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
+        stationContacts.stream()
+            .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
     var toResponse = StationResponse.fromStationDaoWithContactMap(contactIdToContactMap);
 
     return stations.stream().map(toResponse).toList();
@@ -48,6 +49,8 @@ public class StationServiceImpl implements StationService {
   @Override
   public StationResponse getStationById(int id) {
     logger.debug("[getStationById] Getting {} id [{}]", StationResponse.class.getSimpleName(), id);
+
+    // NOTE: No N+1 issue here, because the Station will be only 1 or 0 item.
     return stationRepository
         .findById(id)
         .map(this::toResponseWithContact)
@@ -112,6 +115,7 @@ public class StationServiceImpl implements StationService {
   private StationResponse toResponseWithContact(Station station) {
     var contactId =
         Optional.ofNullable(station.contactId().getId())
+            // TODO: make it available for dynamic method name
             .orElseThrow(errorHelper.runtimeError("getStationById", "Contact Id is null"));
     var contact = userService.getUserById(contactId);
     return StationResponse.fromStationDao(station, contact);
