@@ -70,6 +70,14 @@ public class TicketServiceImpl implements TicketService {
   public boolean deleteTicketById(int id) {
     logger.debug("[deleteTicketById] Deleting {} id [{}]", Ticket.class.getSimpleName(), id);
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    var ticketToDelete =
+        ticketRepository
+            .findById(id)
+            .orElseThrow(errorHelper.entityNotFound("deleteTicketById", Ticket.class, id));
+
+    ticketRepository.deleteById(ticketToDelete.id());
+    logger.info("[deleteTicketById] {} id [{}] is deleted", Ticket.class.getSimpleName(), id);
+
+    return true;
   }
 }
