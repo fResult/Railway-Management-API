@@ -35,14 +35,14 @@ public class TicketController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Ticket> getTicketById(@PathVariable int id) {
+  public ResponseEntity<TicketResponse> getTicketById(@PathVariable int id) {
     logger.debug("[getTicketById] Getting {} by id [{}]", Ticket.class.getSimpleName(), id);
 
     return ResponseEntity.ok(ticketService.getTicketById(id));
   }
 
   @PostMapping
-  public ResponseEntity<Ticket> createTicket(@Validated @RequestBody TicketCreationRequest body) {
+  public ResponseEntity<TicketResponse> createTicket(@Validated @RequestBody TicketCreationRequest body) {
     logger.debug("[createTicket] Creating new {}", Ticket.class.getSimpleName());
     var createdTicket = ticketService.createTicket(body);
     var uri = URI.create(String.format("/api/tickets/%d", createdTicket.id()));
@@ -51,11 +51,10 @@ public class TicketController {
   }
 
   @PatchMapping("/{id}")
-  public Ticket updateTicket(
+  public TicketResponse updateTicket(
       @Min(1) @PathVariable int id, @Validated @RequestBody TicketUpdateRequest body) {
 
-    var ticketToUpdate = TicketUpdateRequest.dtoToTicketUpdate(body);
-    return ticketToUpdate.apply(new Ticket(id, null, null, null));
+    return ticketService.updateTicketById(id, body);
   }
 
   @DeleteMapping("/{id}")

@@ -131,6 +131,7 @@ public class StationServiceImpl implements StationService {
             // TODO: make it available for dynamic method name
             .orElseThrow(errorHelper.runtimeError("getStationById", "Contact Id is null"));
     var contact = userService.getUserById(contactId);
+
     return StationResponse.fromStationDao(station, contact);
   }
 

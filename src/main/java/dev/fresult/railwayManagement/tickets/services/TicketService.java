@@ -9,11 +9,11 @@ import java.util.List;
 public interface TicketService {
   List<TicketResponse> getTickets(Integer passengerId);
 
-  Ticket getTicketById(int ticketId);
+  TicketResponse getTicketById(int ticketId);
 
-  Ticket createTicket(TicketCreationRequest body);
+  TicketResponse createTicket(TicketCreationRequest body);
 
-  Ticket updateTicketById(int id, TicketUpdateRequest body);
+  TicketResponse updateTicketById(int id, TicketUpdateRequest body);
 
   boolean deleteTicketById(int id);
 }

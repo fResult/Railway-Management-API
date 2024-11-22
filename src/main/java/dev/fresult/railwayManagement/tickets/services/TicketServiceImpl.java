@@ -12,6 +12,7 @@ import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
 import dev.fresult.railwayManagement.users.services.UserService;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -52,16 +53,17 @@ public class TicketServiceImpl implements TicketService {
   }
 
   @Override
-  public Ticket getTicketById(int ticketId) {
+  public TicketResponse getTicketById(int ticketId) {
     logger.debug("[getTicketById] Getting {} id [{}]", Ticket.class.getSimpleName(), ticketId);
 
     return ticketRepository
         .findById(ticketId)
+        .map(this::toResponseWithTrainTripAndPassengerInfo)
         .orElseThrow(errorHelper.entityNotFound("getTicketById", Ticket.class, ticketId));
   }
 
   @Override
-  public Ticket createTicket(TicketCreationRequest body) {
+  public TicketResponse createTicket(TicketCreationRequest body) {
     logger.debug("[createTicket] Creating new {}", Ticket.class.getSimpleName());
 
     var ticketToCreate = TicketCreationRequest.dtoToTicketCreate(body);
@@ -69,11 +71,11 @@ public class TicketServiceImpl implements TicketService {
     logger.info(
         "[createTicket] New {} is created: {}", Ticket.class.getSimpleName(), createdTicket);
 
-    return createdTicket;
+    return toResponseWithTrainTripAndPassengerInfo(createdTicket);
   }
 
   @Override
-  public Ticket updateTicketById(int id, TicketUpdateRequest body) {
+  public TicketResponse updateTicketById(int id, TicketUpdateRequest body) {
     logger.debug("[updateTicketById] Updating {} id [{}]", Ticket.class.getSimpleName(), id);
 
     var toTicketUpdate = TicketUpdateRequest.dtoToTicketUpdate(body);
@@ -86,7 +88,7 @@ public class TicketServiceImpl implements TicketService {
     logger.info(
         "[updateTicketById] {} is updated: {}", Ticket.class.getSimpleName(), updatedTicket);
 
-    return updatedTicket;
+    return toResponseWithTrainTripAndPassengerInfo(updatedTicket);
   }
 
   @Override
@@ -129,5 +131,21 @@ public class TicketServiceImpl implements TicketService {
 
     return ticketTrainTrips.stream()
         .collect(Collectors.toMap(TrainTripResponse::id, Function.identity()));
+  }
+
+  private TicketResponse toResponseWithTrainTripAndPassengerInfo(Ticket ticket) {
+    var trainTripId =
+        Optional.ofNullable(ticket.trainTripId().getId())
+            .orElseThrow(
+                // TODO: make it available for dynamic method name
+                errorHelper.runtimeError("getTicketById", "trainTripId"));
+    var passengerId =
+        Optional.ofNullable(ticket.passengerId().getId())
+            // TODO: make it available for dynamic method name
+            .orElseThrow(errorHelper.runtimeError("getTicketById", "passengerId"));
+    var trip = trainTripService.getTrainTripById(trainTripId);
+    var passenger = userService.getUserById(passengerId);
+
+    return TicketResponse.fromTicketDao(ticket, trip, passenger);
   }
 }
