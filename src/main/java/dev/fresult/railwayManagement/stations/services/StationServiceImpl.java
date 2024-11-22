@@ -78,7 +78,7 @@ public class StationServiceImpl implements StationService {
 
   @Override
   public StationResponse updateStationById(int id, StationUpdateRequest body) {
-    logger.debug("[updateStationById] Updating {} id: [{}]", Station.class.getSimpleName(), id);
+    logger.debug("[updateStationById] Updating {} id [{}]", Station.class.getSimpleName(), id);
     var toStationUpdate = StationUpdateRequest.dtoToStationUpdate(body);
     var stationToUpdate =
         stationRepository

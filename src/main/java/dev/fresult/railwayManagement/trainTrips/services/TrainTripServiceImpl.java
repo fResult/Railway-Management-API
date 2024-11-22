@@ -5,13 +5,11 @@ import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import dev.fresult.railwayManagement.trainTrips.TrainTripRepository;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripCreationRequest;
 import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripUpdateRequest;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TrainTripServiceImpl implements TrainTripService {
@@ -50,7 +48,7 @@ public class TrainTripServiceImpl implements TrainTripService {
   @Override
   public TrainTrip getTrainTripById(int trainTripId) {
     logger.debug(
-        "[getTrainTripById] Getting {} by id: {}", TrainTrip.class.getSimpleName(), trainTripId);
+        "[getTrainTripById] Getting {} by id [{}]", TrainTrip.class.getSimpleName(), trainTripId);
 
     return trainTripRepository
         .findById(trainTripId)
@@ -59,7 +57,17 @@ public class TrainTripServiceImpl implements TrainTripService {
 
   @Override
   public TrainTrip createTrainTrip(TrainTripCreationRequest body) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    logger.debug("[createTrainTrip] Creating new {}", TrainTrip.class.getSimpleName());
+
+    var trainTripToCreate = TrainTripCreationRequest.dtoToTrainTripCreate(body);
+    var createdTrainTrip = trainTripRepository.save(trainTripToCreate);
+
+    logger.info(
+        "[createTrainTrip] new {}: {} is created",
+        TrainTrip.class.getSimpleName(),
+        createdTrainTrip);
+
+    return createdTrainTrip;
   }
 
   @Override
