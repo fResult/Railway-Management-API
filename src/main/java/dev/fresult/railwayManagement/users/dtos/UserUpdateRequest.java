@@ -8,7 +8,7 @@ import java.util.function.Function;
 public record UserUpdateRequest(String firstName, String lastName) {
   public static Function<User, User> dtoToUserUpdate(UserUpdateRequest body) {
     return user ->
-        new dev.fresult.railwayManagement.users.entities.User(
+        new User(
             user.id(),
             Optional.ofNullable(body.firstName()).orElse(user.firstName()),
             Optional.ofNullable(body.lastName()).orElse(user.lastName()),

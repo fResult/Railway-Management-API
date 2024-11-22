@@ -10,7 +10,6 @@ import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.repositories.UserRepository;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
