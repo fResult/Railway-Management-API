@@ -1,6 +1,7 @@
 package dev.fresult.railwayManagement.common;
 
 import dev.fresult.railwayManagement.common.exceptions.CredentialExistsException;
+import dev.fresult.railwayManagement.common.exceptions.DuplicateUniqueFieldException;
 import dev.fresult.railwayManagement.common.exceptions.EntityNotFoundException;
 import dev.fresult.railwayManagement.common.exceptions.ValidationException;
 import java.util.HashMap;
@@ -62,8 +63,18 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
     return ResponseEntity.of(detail).build();
   }
 
+  @ExceptionHandler(DuplicateUniqueFieldException.class)
+  protected ResponseEntity<?> handleDuplicateUniqueException(DuplicateUniqueFieldException ex) {
+    System.out.println("Duplicate unique field exception");
+    var detail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    logger.info("Duplicate unique field: {}", ex.getMessage());
+
+    return ResponseEntity.of(detail).build();
+  }
+
   @ExceptionHandler(Exception.class)
   protected ResponseEntity<?> handleGlobalException(Exception ex) {
+    System.out.println("Global exception");
     var detail =
         ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     logger.error(ex.getMessage());

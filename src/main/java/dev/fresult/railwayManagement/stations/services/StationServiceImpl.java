@@ -1,5 +1,6 @@
 package dev.fresult.railwayManagement.stations.services;
 
+import dev.fresult.railwayManagement.common.exceptions.DuplicateUniqueFieldException;
 import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
 import dev.fresult.railwayManagement.stations.Station;
 import dev.fresult.railwayManagement.stations.StationRepository;
@@ -57,6 +58,17 @@ public class StationServiceImpl implements StationService {
   public StationResponse createStation(StationCreationRequest body) {
     logger.debug("[createStation] Creating new {}", Station.class.getSimpleName());
     var toStationCreate = StationCreationRequest.dtoToStationCreate(body);
+    var isStationCodeExisted = stationRepository.existsByCode(toStationCreate.code());
+    if (isStationCodeExisted) {
+      logger.warn(
+          "[createStation] {} code: {} is already existed",
+          Station.class.getSimpleName(),
+          toStationCreate.code());
+      throw new DuplicateUniqueFieldException(
+          String.format(
+              "%s code [%s] is already existed",
+              Station.class.getSimpleName(), toStationCreate.code()));
+    }
     var createdStation = stationRepository.save(toStationCreate);
     logger.info(
         "[createStation] New {} is created: {}", Station.class.getSimpleName(), createdStation);
