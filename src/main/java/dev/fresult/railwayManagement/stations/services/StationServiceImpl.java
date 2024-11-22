@@ -97,6 +97,7 @@ public class StationServiceImpl implements StationService {
   public boolean deleteStationById(int id) {
     logger.debug(
         "[deleteStationById] Deleting {} id [{}]", StationResponse.class.getSimpleName(), id);
+
     stationRepository.deleteById(id);
     logger.info(
         "[deleteStationById] {} id [{}] is deleted", StationResponse.class.getSimpleName(), id);

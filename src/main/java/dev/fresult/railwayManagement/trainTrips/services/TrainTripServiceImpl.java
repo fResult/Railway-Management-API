@@ -92,6 +92,12 @@ public class TrainTripServiceImpl implements TrainTripService {
 
   @Override
   public boolean deleteTrainTripById(int id) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    logger.debug(
+        "[deleteTrainTripById] Deleting {} by id [{}]", TrainTrip.class.getSimpleName(), id);
+
+    trainTripRepository.deleteById(id);
+    logger.info("[deleteTrainTripById] {} id [{}] is deleted", TrainTrip.class.getSimpleName(), id);
+
+    return true;
   }
 }
