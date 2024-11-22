@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         new User(null, body.firstName(), body.lastName(), body.email(), encryptedPassword);
     var registeredUser = userRepository.save(userToRegister);
     userRoleService.saveUserRole(registeredUser.id(), RoleName.PASSENGER.getId());
-    logger.info("[register] new {}: {} is registered", User.class.getSimpleName(), registeredUser);
+    logger.info("[register] New {}: {} is registered", User.class.getSimpleName(), registeredUser);
 
     return UserInfoResponse.fromUserDao(registeredUser);
   }

@@ -23,6 +23,7 @@ public class TrainTripServiceImpl implements TrainTripService {
   }
 
   // TODO: Inject the relation resources to the response, make them concurrent
+  // TODO: Implement the filtering logic with the query parameters in Repository (example in TicketRepository)
   @Override
   public List<TrainTrip> getTrainTrips(Integer originStationId, Integer destinationStationId) {
     logger.debug(
@@ -66,7 +67,7 @@ public class TrainTripServiceImpl implements TrainTripService {
     var createdTrainTrip = trainTripRepository.save(trainTripToCreate);
 
     logger.info(
-        "[createTrainTrip] new {}: {} is created",
+        "[createTrainTrip] New {}: {} is created",
         TrainTrip.class.getSimpleName(),
         createdTrainTrip);
 
