@@ -51,6 +51,22 @@ public class TrainTripServiceImpl implements TrainTripService {
     return trainTrips.stream().map(toResponse).toList();
   }
 
+  @Override
+  public List<TrainTripResponse> getTrainTripsByIds(Set<Integer> trainTripIds) {
+    logger.debug(
+        "[getTrainTripsByIds] Getting all {} by ids", TrainTrip.class.getSimpleName());
+    var trainTrips = trainTripRepository.findAllById(trainTripIds);
+
+    var tripStationIds = buildTrainTripStationIds(trainTrips);
+    /* NOTE: Use `getStationsByIds` and hash table to prevent 1+N issue. */
+    var tripStations = stationService.getStationsByIds(tripStationIds);
+    var stationIdToStationMap =
+        tripStations.stream().collect(Collectors.toMap(StationResponse::id, Function.identity()));
+    var toResponse = TrainTripResponse.fromTrainTripDaoWithStationMaps(stationIdToStationMap);
+
+    return trainTrips.stream().map(toResponse).toList();
+  }
+
   // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTripResponse getTrainTripById(int trainTripId) {

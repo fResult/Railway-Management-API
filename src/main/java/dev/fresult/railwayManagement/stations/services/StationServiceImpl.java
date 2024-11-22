@@ -120,6 +120,7 @@ public class StationServiceImpl implements StationService {
     var stationContactIds = buildStationContactIds(stations);
     /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
     var stationContacts = userService.getUsersByIds(stationContactIds);
+
     return stationContacts.stream()
         .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
   }
