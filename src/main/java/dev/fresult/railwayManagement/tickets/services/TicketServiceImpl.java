@@ -41,7 +41,12 @@ public class TicketServiceImpl implements TicketService {
   public Ticket createTicket(TicketCreationRequest body) {
     logger.debug("[createTicket] Creating new {}", Ticket.class.getSimpleName());
 
-    throw new UnsupportedOperationException("Not implemented yet");
+    var ticketToCreate = TicketCreationRequest.dtoToTicketCreate(body);
+    var createdTicket = ticketRepository.save(ticketToCreate);
+    logger.info(
+        "[createTicket] New {}: {} is created", Ticket.class.getSimpleName(), createdTicket);
+
+    return createdTicket;
   }
 
   @Override
