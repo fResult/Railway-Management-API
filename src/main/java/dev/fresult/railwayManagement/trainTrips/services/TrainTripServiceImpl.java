@@ -72,7 +72,22 @@ public class TrainTripServiceImpl implements TrainTripService {
 
   @Override
   public TrainTrip updateTrainTripById(int id, TrainTripUpdateRequest body) {
-    throw new UnsupportedOperationException("Not implemented yet");
+    logger.debug(
+        "[updateTrainTripById] Updating {} by id [{}]", TrainTrip.class.getSimpleName(), id);
+    var toTrainTripUpdate = TrainTripUpdateRequest.dtoToTrainTripUpdate(body);
+    var trainTripToUpdate =
+        trainTripRepository
+            .findById(id)
+            .map(toTrainTripUpdate)
+            .orElseThrow(errorHelper.entityNotFound("updateTrainTripById", TrainTrip.class, id));
+
+    var updatedTrainTrip = trainTripRepository.save(trainTripToUpdate);
+    logger.info(
+        "[updateTrainTripById] {} is updated: {}",
+        TrainTrip.class.getSimpleName(),
+        updatedTrainTrip);
+
+    return updatedTrainTrip;
   }
 
   @Override
