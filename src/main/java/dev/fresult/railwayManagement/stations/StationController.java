@@ -25,19 +25,19 @@ public class StationController {
 
   @GetMapping
   public ResponseEntity<List<StationResponse>> getStations() {
-    logger.debug("[getStations] Getting all stations");
+    logger.debug("[getStations] Getting all {}s", Station.class.getSimpleName());
     return ResponseEntity.ok(stationService.getStations());
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<StationResponse> getStationById(@PathVariable int id) {
-    logger.debug("[getStationById] Getting {} by id: {}", Station.class.getSimpleName(), id);
+    logger.debug("[getStationById] Getting {} by id [{}]", Station.class.getSimpleName(), id);
     return ResponseEntity.ok(stationService.getStationById(id));
   }
 
   @PostMapping
-  public ResponseEntity<StationResponse> create(@Validated @RequestBody StationCreationRequest body) {
-    logger.debug("[create] new {} is creating", Station.class.getSimpleName());
+  public ResponseEntity<StationResponse> createStation(@Validated @RequestBody StationCreationRequest body) {
+    logger.debug("[createStation] Creating new {}", Station.class.getSimpleName());
     var createdStation = stationService.createStation(body);
     var uri = URI.create(String.format("/api/stations/%d", createdStation.id()));
 
@@ -47,8 +47,9 @@ public class StationController {
   @PatchMapping("/{id}")
   public ResponseEntity<StationResponse> updateById(
       @PathVariable int id, @Validated @RequestBody StationUpdateRequest body) {
-    logger.debug("[updateById] Updating {} by id: {}", Station.class.getSimpleName(), id);
+    logger.debug("[updateById] Updating {} by id [{}]", Station.class.getSimpleName(), id);
     var updatedStation = stationService.updateStationById(id, body);
+
     return ResponseEntity.ok(updatedStation);
   }
 
@@ -58,6 +59,6 @@ public class StationController {
     stationService.deleteStationById(id);
 
     return ResponseEntity.ok(
-        String.format("Delete %s id [%d] successfully", Station.class.getSimpleName(), id));
+        String.format("Delete %s by id [%d] successfully", Station.class.getSimpleName(), id));
   }
 }
