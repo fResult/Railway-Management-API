@@ -57,19 +57,19 @@ public class StationServiceImpl implements StationService {
   @Override
   public StationResponse createStation(StationCreationRequest body) {
     logger.debug("[createStation] Creating new {}", Station.class.getSimpleName());
-    var toStationCreate = StationCreationRequest.dtoToStationCreate(body);
-    var isStationCodeExisted = stationRepository.existsByCode(toStationCreate.code());
+    var stationToCreate = StationCreationRequest.dtoToStationCreate(body);
+    var isStationCodeExisted = stationRepository.existsByCode(stationToCreate.code());
     if (isStationCodeExisted) {
       logger.warn(
           "[createStation] {} code: {} is already existed",
           Station.class.getSimpleName(),
-          toStationCreate.code());
+          stationToCreate.code());
       throw new DuplicateUniqueFieldException(
           String.format(
               "%s code [%s] is already existed",
-              Station.class.getSimpleName(), toStationCreate.code()));
+              Station.class.getSimpleName(), stationToCreate.code()));
     }
-    var createdStation = stationRepository.save(toStationCreate);
+    var createdStation = stationRepository.save(stationToCreate);
     logger.info(
         "[createStation] New {} is created: {}", Station.class.getSimpleName(), createdStation);
 

@@ -10,6 +10,7 @@ public record StationCreationRequest(
     @NotBlank String name,
     @NotBlank String location,
     @NotNull Integer contactId) {
+
   public static Station dtoToStationCreate(StationCreationRequest body) {
     return new Station(
         null, body.code(), body.name(), body.location(), AggregateReference.to(body.contactId()));
