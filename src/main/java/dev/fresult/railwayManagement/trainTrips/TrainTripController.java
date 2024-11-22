@@ -1,15 +1,29 @@
 package dev.fresult.railwayManagement.trainTrips;
 
+import dev.fresult.railwayManagement.trainTrips.services.TrainTripService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/train-trips")
 public class TrainTripController {
-    @GetMapping
-    public ResponseEntity<?> getTrainTrips() {
-        return ResponseEntity.ok("Train Trips");
-    }
+
+  private final Logger logger = LoggerFactory.getLogger(TrainTripController.class);
+
+  private final TrainTripService trainTripService;
+
+  public TrainTripController(TrainTripService trainTripService) {
+    this.trainTripService = trainTripService;
+  }
+
+  @GetMapping
+  public ResponseEntity<?> getTrainTrips(
+      @RequestParam(name = "from", required = false) Integer originStationId,
+      @RequestParam(name = "to", required = false) Integer destinationStationId) {
+    logger.debug("[getTrainTrips] Getting all train trips");
+
+    return ResponseEntity.ok(trainTripService.getTrainTrips(originStationId, destinationStationId));
+  }
 }
