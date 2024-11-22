@@ -9,9 +9,8 @@ import dev.fresult.railwayManagement.stations.dtos.StationResponse;
 import dev.fresult.railwayManagement.stations.dtos.StationUpdateRequest;
 import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
 import dev.fresult.railwayManagement.users.services.UserService;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -35,12 +34,11 @@ public class StationServiceImpl implements StationService {
   public List<StationResponse> getStations() {
     logger.debug("[getStations] Getting all {}", StationResponse.class.getSimpleName());
     var stations = stationRepository.findAll();
-    var stationContactIds = buildStationContactIds(stations);
-    /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
-    var stationContacts = userService.getUsersByIds(stationContactIds);
-    var contactIdToContactMap =
-        stationContacts.stream()
-            .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
+    var contactIdToContactMap = buildContactIdToContactMap(stations);
+    var toResponse = StationResponse.fromStationDaoWithContactMap(contactIdToContactMap);
+
+    return stations.stream().map(toResponse).toList();
+  }
     var toResponse = StationResponse.fromStationDaoWithContactMap(contactIdToContactMap);
 
     return stations.stream().map(toResponse).toList();
@@ -110,6 +108,14 @@ public class StationServiceImpl implements StationService {
     return stations.stream()
         .map(station -> station.contactId().getId())
         .collect(Collectors.toSet());
+  }
+
+  private Map<Integer, UserInfoResponse> buildContactIdToContactMap(List<Station> stations) {
+    var stationContactIds = buildStationContactIds(stations);
+    /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
+    var stationContacts = userService.getUsersByIds(stationContactIds);
+    return stationContacts.stream()
+        .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
   }
 
   private StationResponse toResponseWithContact(Station station) {
