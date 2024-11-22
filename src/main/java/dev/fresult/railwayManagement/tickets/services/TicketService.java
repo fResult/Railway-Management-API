@@ -12,7 +12,7 @@ public interface TicketService {
 
   Ticket createTicket(TicketCreationRequest body);
 
-  Ticket updateTicketById(TicketUpdateRequest body);
+  Ticket updateTicketById(int id, TicketUpdateRequest body);
 
   boolean deleteTicketById(int id);
 }
