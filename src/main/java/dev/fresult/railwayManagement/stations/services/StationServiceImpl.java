@@ -97,8 +97,12 @@ public class StationServiceImpl implements StationService {
   public boolean deleteStationById(int id) {
     logger.debug(
         "[deleteStationById] Deleting {} id [{}]", StationResponse.class.getSimpleName(), id);
+    var stationToDelete =
+        stationRepository
+            .findById(id)
+            .orElseThrow(errorHelper.entityNotFound("deleteStationById", Station.class, id));
 
-    stationRepository.deleteById(id);
+    stationRepository.deleteById(stationToDelete.id());
     logger.info(
         "[deleteStationById] {} id [{}] is deleted", StationResponse.class.getSimpleName(), id);
 

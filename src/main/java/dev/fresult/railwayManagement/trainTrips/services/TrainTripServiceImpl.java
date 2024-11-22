@@ -22,6 +22,7 @@ public class TrainTripServiceImpl implements TrainTripService {
     this.trainTripRepository = trainTripRepository;
   }
 
+  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public List<TrainTrip> getTrainTrips(Integer originStationId, Integer destinationStationId) {
     logger.debug(
@@ -45,6 +46,7 @@ public class TrainTripServiceImpl implements TrainTripService {
     return trainTripRepository.findAll();
   }
 
+  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTrip getTrainTripById(int trainTripId) {
     logger.debug(
@@ -55,6 +57,7 @@ public class TrainTripServiceImpl implements TrainTripService {
         .orElseThrow(errorHelper.entityNotFound("getTrainTripById", TrainTrip.class, trainTripId));
   }
 
+  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTrip createTrainTrip(TrainTripCreationRequest body) {
     logger.debug("[createTrainTrip] Creating new {}", TrainTrip.class.getSimpleName());
@@ -70,6 +73,7 @@ public class TrainTripServiceImpl implements TrainTripService {
     return createdTrainTrip;
   }
 
+  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTrip updateTrainTripById(int id, TrainTripUpdateRequest body) {
     logger.debug(
@@ -94,8 +98,12 @@ public class TrainTripServiceImpl implements TrainTripService {
   public boolean deleteTrainTripById(int id) {
     logger.debug(
         "[deleteTrainTripById] Deleting {} by id [{}]", TrainTrip.class.getSimpleName(), id);
+    var trainTripToDelete =
+        trainTripRepository
+            .findById(id)
+            .orElseThrow(errorHelper.entityNotFound("deleteTrainTripById", TrainTrip.class, id));
 
-    trainTripRepository.deleteById(id);
+    trainTripRepository.deleteById(trainTripToDelete.id());
     logger.info("[deleteTrainTripById] {} id [{}] is deleted", TrainTrip.class.getSimpleName(), id);
 
     return true;
