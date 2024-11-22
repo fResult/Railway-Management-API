@@ -30,7 +30,6 @@ public class TrainTripServiceImpl implements TrainTripService {
     this.stationService = stationService;
   }
 
-  // TODO: Implement the filtering logic with the query parameters in Repository (example in TicketRepository)
   @Override
   public List<TrainTripResponse> getTrainTrips(
       Integer originStationId, Integer destinationStationId) {
@@ -40,12 +39,7 @@ public class TrainTripServiceImpl implements TrainTripService {
         destinationStationId);
 
     var trainTrips = trainTripRepository.findAllWithFilters(originStationId, destinationStationId);
-
-    var tripStationIds = buildTrainTripStationIds(trainTrips);
-    /* NOTE: Use `getStationsByIds` and hash table to prevent 1+N issue. */
-    var tripStations = stationService.getStationsByIds(tripStationIds);
-    var stationIdToStationMap =
-        tripStations.stream().collect(Collectors.toMap(StationResponse::id, Function.identity()));
+    var stationIdToStationMap = buildTrainTripIdToTrainTripMap(trainTrips);
     var toResponse = TrainTripResponse.fromTrainTripDaoWithStationMaps(stationIdToStationMap);
 
     return trainTrips.stream().map(toResponse).toList();
@@ -53,21 +47,14 @@ public class TrainTripServiceImpl implements TrainTripService {
 
   @Override
   public List<TrainTripResponse> getTrainTripsByIds(Set<Integer> trainTripIds) {
-    logger.debug(
-        "[getTrainTripsByIds] Getting all {} by ids", TrainTrip.class.getSimpleName());
+    logger.debug("[getTrainTripsByIds] Getting all {} by ids", TrainTrip.class.getSimpleName());
     var trainTrips = trainTripRepository.findAllById(trainTripIds);
-
-    var tripStationIds = buildTrainTripStationIds(trainTrips);
-    /* NOTE: Use `getStationsByIds` and hash table to prevent 1+N issue. */
-    var tripStations = stationService.getStationsByIds(tripStationIds);
-    var stationIdToStationMap =
-        tripStations.stream().collect(Collectors.toMap(StationResponse::id, Function.identity()));
+    var stationIdToStationMap = buildTrainTripIdToTrainTripMap(trainTrips);
     var toResponse = TrainTripResponse.fromTrainTripDaoWithStationMaps(stationIdToStationMap);
 
     return trainTrips.stream().map(toResponse).toList();
   }
 
-  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTripResponse getTrainTripById(int trainTripId) {
     logger.debug(
@@ -80,7 +67,6 @@ public class TrainTripServiceImpl implements TrainTripService {
         .orElseThrow(errorHelper.entityNotFound("getTrainTripById", TrainTrip.class, trainTripId));
   }
 
-  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTripResponse createTrainTrip(TrainTripCreationRequest body) {
     logger.debug("[createTrainTrip] Creating new {}", TrainTrip.class.getSimpleName());
@@ -96,7 +82,6 @@ public class TrainTripServiceImpl implements TrainTripService {
     return toResponseWithStations(createdTrainTrip);
   }
 
-  // TODO: Inject the relation resources to the response, make them concurrent
   @Override
   public TrainTripResponse updateTrainTripById(int id, TrainTripUpdateRequest body) {
     logger.debug(
@@ -141,6 +126,15 @@ public class TrainTripServiceImpl implements TrainTripService {
         };
 
     return trainTrips.stream().flatMap(toTripStationId).collect(Collectors.toSet());
+  }
+
+  private Map<Integer, StationResponse> buildTrainTripIdToTrainTripMap(List<TrainTrip> trainTrips) {
+    var trainTripStationIds = buildTrainTripStationIds(trainTrips);
+    /* NOTE: Use `getStationsByIds` and hash table to prevent 1+N issue. */
+    var tripStations = stationService.getStationsByIds(trainTripStationIds);
+
+    return tripStations.stream()
+        .collect(Collectors.toMap(StationResponse::id, Function.identity()));
   }
 
   private TrainTripResponse toResponseWithStations(TrainTrip trainTrip) {

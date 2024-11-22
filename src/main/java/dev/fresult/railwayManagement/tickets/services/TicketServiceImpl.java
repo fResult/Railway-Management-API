@@ -4,8 +4,17 @@ import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
 import dev.fresult.railwayManagement.tickets.Ticket;
 import dev.fresult.railwayManagement.tickets.TicketRepository;
 import dev.fresult.railwayManagement.tickets.dtos.TicketCreationRequest;
+import dev.fresult.railwayManagement.tickets.dtos.TicketResponse;
 import dev.fresult.railwayManagement.tickets.dtos.TicketUpdateRequest;
+import dev.fresult.railwayManagement.trainTrips.dtos.TrainTripResponse;
+import dev.fresult.railwayManagement.trainTrips.services.TrainTripService;
+import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
+import dev.fresult.railwayManagement.users.services.UserService;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,16 +25,57 @@ public class TicketServiceImpl implements TicketService {
   private final ErrorHelper errorHelper = new ErrorHelper(TicketServiceImpl.class);
 
   private final TicketRepository ticketRepository;
+  private final UserService userService;
+  private final TrainTripService trainTripService;
 
-  public TicketServiceImpl(TicketRepository ticketRepository) {
+  public TicketServiceImpl(
+      TicketRepository ticketRepository,
+      UserService userService,
+      TrainTripService trainTripService) {
     this.ticketRepository = ticketRepository;
+    this.userService = userService;
+    this.trainTripService = trainTripService;
   }
 
   @Override
-  public List<Ticket> getTickets(Integer passengerId) {
+  public List<TicketResponse> getTickets(Integer passengerId) {
     logger.debug("[getTickets] Getting all {}s", Ticket.class.getSimpleName());
+    var tickets = ticketRepository.findAllWithFilters(passengerId);
+    // TODO: Make them query concurrently
+    var passengerIdToPassengerMap = buildPassengerIdToPassengerMap(tickets);
+    var trainTripIdToTrainTripMap = buildTrainTripIdToTrainTripMap(tickets);
+    var toResponse =
+        TicketResponse.fromTicketDaoWithTrainTripAndPassengerInfoMaps(
+            trainTripIdToTrainTripMap, passengerIdToPassengerMap);
 
-    return ticketRepository.findAllWithFilters(passengerId);
+    return tickets.stream().map(toResponse).toList();
+  }
+
+  private Set<Integer> buildPassengerIds(List<Ticket> tickets) {
+    return tickets.stream().map(ticket -> ticket.passengerId().getId()).collect(Collectors.toSet());
+  }
+
+  private Set<Integer> buildTrainTripIds(List<Ticket> tickets) {
+    return tickets.stream().map(ticket -> ticket.trainTripId().getId()).collect(Collectors.toSet());
+  }
+
+  private Map<Integer, UserInfoResponse> buildPassengerIdToPassengerMap(List<Ticket> tickets) {
+    var passengerIds = buildPassengerIds(tickets);
+    /* NOTE: Use `getUsersByIds` and hash table to prevent 1+N issue. */
+    var ticketPassengers = userService.getUsersByIds(passengerIds);
+
+    return ticketPassengers.stream()
+        .collect(Collectors.toMap(UserInfoResponse::id, Function.identity()));
+  }
+
+  private Map<Integer, TrainTripResponse> buildTrainTripIdToTrainTripMap(List<Ticket> tickets) {
+    var trainTripIds = buildTrainTripIds(tickets);
+
+    /* NOTE: Use `getTrainTripsByIds` and hash table to prevent 1+N issue. */
+    var ticketTrainTrips = trainTripService.getTrainTripsByIds(trainTripIds);
+
+    return ticketTrainTrips.stream()
+        .collect(Collectors.toMap(TrainTripResponse::id, Function.identity()));
   }
 
   @Override

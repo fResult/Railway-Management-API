@@ -1,13 +1,12 @@
 package dev.fresult.railwayManagement.tickets;
 
 import dev.fresult.railwayManagement.tickets.dtos.TicketCreationRequest;
+import dev.fresult.railwayManagement.tickets.dtos.TicketResponse;
 import dev.fresult.railwayManagement.tickets.dtos.TicketUpdateRequest;
 import dev.fresult.railwayManagement.tickets.services.TicketService;
-
+import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
-
-import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +26,8 @@ public class TicketController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Ticket>> getTickets(
-      @RequestParam(name = "passenger-id", required = false)
-          @Min(1)
-          Integer passengerId) {
+  public ResponseEntity<List<TicketResponse>> getTickets(
+      @RequestParam(name = "passenger-id", required = false) @Min(1) Integer passengerId) {
 
     logger.debug("[getTickets] Getting all {}s", Ticket.class.getSimpleName());
 
