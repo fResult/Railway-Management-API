@@ -2,16 +2,21 @@ package dev.fresult.railwayManagement.users.services;
 
 import dev.fresult.railwayManagement.common.enums.RoleName;
 import dev.fresult.railwayManagement.common.exceptions.CredentialExistsException;
+import dev.fresult.railwayManagement.common.exceptions.UnauthorizedException;
 import dev.fresult.railwayManagement.common.helpers.ErrorHelper;
-import dev.fresult.railwayManagement.users.dtos.UserInfoResponse;
-import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
-import dev.fresult.railwayManagement.users.dtos.UserUpdateRequest;
+import dev.fresult.railwayManagement.users.dtos.*;
 import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.repositories.UserRepository;
 import java.util.Collection;
 import java.util.List;
+
+import dev.fresult.railwayManagement.users.utils.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +28,21 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final UserRoleService userRoleService;
+  private final AuthenticationManager authenticationManager;
   private final PasswordEncoder passwordEncoder;
+  private final JwtTokenUtil jwtTokenUtil;
 
   public UserServiceImpl(
       UserRepository userRepository,
       UserRoleService userRoleService,
-      PasswordEncoder passwordEncoder) {
+      AuthenticationManager authenticationManager,
+      PasswordEncoder passwordEncoder,
+      JwtTokenUtil jwtTokenUtil) {
     this.userRepository = userRepository;
     this.userRoleService = userRoleService;
+    this.authenticationManager = authenticationManager;
     this.passwordEncoder = passwordEncoder;
+    this.jwtTokenUtil = jwtTokenUtil;
   }
 
   @Override
@@ -56,6 +67,24 @@ public class UserServiceImpl implements UserService {
     logger.info("[register] New {} is registered: {}", User.class.getSimpleName(), registeredUser);
 
     return UserInfoResponse.fromUserDao(registeredUser);
+  }
+
+  @Override
+  public LoginResponse login(UserLoginRequest loginRequest) {
+    try {
+      var authentication =
+          authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(
+                  loginRequest.email(), loginRequest.password()));
+
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      var token = jwtTokenUtil.generateToken((UserDetails) authentication.getPrincipal());
+
+      return LoginResponse.of(token);
+    } catch (Exception ex) {
+      logger.warn("[login] Authentication failed for user: {}", ex.getMessage());
+      throw new UnauthorizedException("Invalid email or password");
+    }
   }
 
   @Override
