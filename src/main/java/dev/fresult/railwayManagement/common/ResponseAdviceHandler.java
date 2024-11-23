@@ -1,9 +1,7 @@
 package dev.fresult.railwayManagement.common;
 
-import dev.fresult.railwayManagement.common.exceptions.CredentialExistsException;
-import dev.fresult.railwayManagement.common.exceptions.DuplicateUniqueFieldException;
-import dev.fresult.railwayManagement.common.exceptions.EntityNotFoundException;
-import dev.fresult.railwayManagement.common.exceptions.ValidationException;
+import dev.fresult.railwayManagement.common.exceptions.*;
+
 import java.util.HashMap;
 
 import jakarta.validation.ConstraintViolationException;
@@ -13,6 +11,7 @@ import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -43,7 +42,9 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
-  protected ResponseEntity<?> handleConstraintViolation(ConstraintViolationException ex) {
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected ResponseEntity<ProblemDetail> handleConstraintViolation(
+      ConstraintViolationException ex) {
     var detail =
         ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid request parameters");
 
@@ -63,7 +64,8 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<Object> handleMethodArgumentTypeMismatch(
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseEntity<ProblemDetail> handleMethodArgumentTypeMismatch(
       MethodArgumentTypeMismatchException ex, WebRequest request) {
     var detail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
 
@@ -71,15 +73,27 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(ValidationException.class)
-  protected ResponseEntity<?> handleValidationException(ValidationException ex) {
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  protected ResponseEntity<ProblemDetail> handleValidationException(ValidationException ex) {
     var detail = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
     logger.info("Validation error: {}", ex.getMessage());
 
     return ResponseEntity.of(detail).build();
   }
 
+  @ExceptionHandler(UnauthorizedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  protected ResponseEntity<ProblemDetail> handleUnauthorizedException(UnauthorizedException ex) {
+    var detail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    logger.info("Unauthorized: {}", ex.getMessage());
+
+    return ResponseEntity.of(detail).build();
+  }
+
   @ExceptionHandler(EntityNotFoundException.class)
-  protected ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex) {
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  protected ResponseEntity<ProblemDetail> handleEntityNotFoundException(
+      EntityNotFoundException ex) {
     var detail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
     logger.info("Entity not found: {}", ex.getMessage());
 
@@ -87,7 +101,9 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(CredentialExistsException.class)
-  protected ResponseEntity<?> handleCredentialExistsException(CredentialExistsException ex) {
+  @ResponseStatus(HttpStatus.CONFLICT)
+  protected ResponseEntity<ProblemDetail> handleCredentialExistsException(
+      CredentialExistsException ex) {
     var detail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     logger.info("Credential exists: {}", ex.getMessage());
 
@@ -95,7 +111,9 @@ public class ResponseAdviceHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(DuplicateUniqueFieldException.class)
-  protected ResponseEntity<?> handleDuplicateUniqueException(DuplicateUniqueFieldException ex) {
+  @ResponseStatus(HttpStatus.CONFLICT)
+  protected ResponseEntity<ProblemDetail> handleDuplicateUniqueException(
+      DuplicateUniqueFieldException ex) {
     System.out.println("Duplicate unique field exception");
     var detail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     logger.info("Duplicate unique field: {}", ex.getMessage());
