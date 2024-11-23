@@ -5,6 +5,7 @@ import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
 import dev.fresult.railwayManagement.users.dtos.UserUpdateRequest;
 import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -37,6 +38,7 @@ public class UserController {
   }
 
   // TODO: need to have token to get information
+  @Operation(hidden = true)
   @GetMapping("/me")
   public ResponseEntity<UserInfoResponse> getMyUserInfo() {
     logger.debug("[getMyUserInfo] Getting my {} info", User.class.getSimpleName());

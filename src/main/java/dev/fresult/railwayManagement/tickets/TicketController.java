@@ -4,6 +4,7 @@ import dev.fresult.railwayManagement.tickets.dtos.TicketCreationRequest;
 import dev.fresult.railwayManagement.tickets.dtos.TicketResponse;
 import dev.fresult.railwayManagement.tickets.dtos.TicketUpdateRequest;
 import dev.fresult.railwayManagement.tickets.services.TicketService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
@@ -36,7 +37,8 @@ public class TicketController {
   }
 
   // TODO: need to have token to get information
-  @GetMapping("/my")
+  @Operation(hidden = true)
+  @GetMapping("/me")
   public ResponseEntity<List<TicketResponse>> getMyTickets() {
     throw new UnsupportedOperationException("Not implemented yet");
   }
