@@ -2,11 +2,17 @@ package dev.fresult.railwayManagement.users.dtos;
 
 import dev.fresult.railwayManagement.common.validations.NotEmptyIfPresent;
 import dev.fresult.railwayManagement.users.entities.User;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
+
 import java.util.Optional;
 import java.util.function.Function;
 
 public record UserUpdateRequest(
-        @NotEmptyIfPresent String firstName, @NotEmptyIfPresent String lastName) {
+    @NotEmptyIfPresent @Schema(minLength = 6, maxLength = 255) @Size(min = 1, max = 255)
+        String firstName,
+    @NotEmptyIfPresent @Schema(minLength = 6, maxLength = 255) @Size(min = 1, max = 255)
+        String lastName) {
   public static Function<User, User> dtoToUserUpdate(UserUpdateRequest body) {
     return user ->
         new User(

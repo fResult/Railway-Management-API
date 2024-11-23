@@ -25,6 +25,7 @@ public class TicketController {
     this.ticketService = ticketService;
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @GetMapping
   public ResponseEntity<List<TicketResponse>> getTickets(
       @RequestParam(name = "passenger-id", required = false) @Min(1) Integer passengerId) {
@@ -34,6 +35,13 @@ public class TicketController {
     return ResponseEntity.ok(ticketService.getTickets(passengerId));
   }
 
+  // TODO: need to have token to get information
+  @GetMapping("/my")
+  public ResponseEntity<List<TicketResponse>> getMyTickets() {
+    throw new UnsupportedOperationException("Not implemented yet");
+  }
+
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @GetMapping("/{id}")
   public ResponseEntity<TicketResponse> getTicketById(@PathVariable int id) {
     logger.debug("[getTicketById] Getting {} by id [{}]", Ticket.class.getSimpleName(), id);
@@ -41,6 +49,7 @@ public class TicketController {
     return ResponseEntity.ok(ticketService.getTicketById(id));
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @PostMapping
   public ResponseEntity<TicketResponse> createTicket(@Validated @RequestBody TicketCreationRequest body) {
     logger.debug("[createTicket] Creating new {}", Ticket.class.getSimpleName());
@@ -50,6 +59,7 @@ public class TicketController {
     return ResponseEntity.created(uri).body(createdTicket);
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @PatchMapping("/{id}")
   public TicketResponse updateTicket(
       @Min(1) @PathVariable int id, @Validated @RequestBody TicketUpdateRequest body) {
@@ -57,6 +67,7 @@ public class TicketController {
     return ticketService.updateTicketById(id, body);
   }
 
+  // TODO: Protected route for only ADMIN and STATION_STAFF
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteTicketById(@PathVariable int id) {
     logger.debug("[deleteTicketById] Deleting {} id [{}]", Ticket.class.getSimpleName(), id);

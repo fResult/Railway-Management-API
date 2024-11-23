@@ -5,13 +5,14 @@ import dev.fresult.railwayManagement.common.validations.NotEmptyIfPresent;
 import dev.fresult.railwayManagement.stations.Station;
 import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Function;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 
 public record TrainTripUpdateRequest(
-    @NotEmptyIfPresent String trainNumber,
+    @NotEmptyIfPresent @Size(min = 1, max = 24) String trainNumber,
     Instant departureTime,
     Instant arrivalTime,
     @Min(1) Integer originalStationId,

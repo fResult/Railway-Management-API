@@ -4,11 +4,12 @@ import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 
 public record TrainTripCreationRequest(
-    @NotBlank String trainNumber,
+    @NotBlank @Size(min = 1, max = 24) String trainNumber,
     @NotNull @Min(1) Instant departureTime,
     @NotNull @Min(1) Instant arrivalTime,
     @NotNull @Min(1) Integer originalStationId,

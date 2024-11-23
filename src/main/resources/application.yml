@@ -2,6 +2,10 @@ server:
   shutdown: graceful
   port: 8888
 
+springdoc:
+  api-docs:
+    path: /api-docs
+
 spring:
   application:
     name: "Railway Management API"

@@ -5,13 +5,15 @@ import dev.fresult.railwayManagement.common.validations.NotEmptyIfPresent;
 import dev.fresult.railwayManagement.tickets.Ticket;
 import dev.fresult.railwayManagement.trainTrips.TrainTrip;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+
 import java.util.Optional;
 import java.util.function.Function;
 
 public record TicketUpdateRequest(
     @Min(1) Integer trainTripId,
     @Min(1) Integer passengerId,
-    @NotEmptyIfPresent String seatNumber) {
+    @NotEmptyIfPresent @Size(min = 1, max = 16) String seatNumber) {
 
   public static Function<Ticket, Ticket> dtoToTicketUpdate(TicketUpdateRequest body) {
     return ticket -> {

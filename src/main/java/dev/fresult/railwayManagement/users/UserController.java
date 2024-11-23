@@ -5,6 +5,8 @@ import dev.fresult.railwayManagement.users.dtos.UserRegistrationRequest;
 import dev.fresult.railwayManagement.users.dtos.UserUpdateRequest;
 import dev.fresult.railwayManagement.users.entities.User;
 import dev.fresult.railwayManagement.users.services.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import java.net.URI;
 import java.util.List;
@@ -65,7 +67,8 @@ public class UserController {
   // TODO: Protected route for logged in user
   @PatchMapping("/{id}")
   public ResponseEntity<UserInfoResponse> updateUserById(
-      @Min(1) @PathVariable int id, @Validated @RequestBody UserUpdateRequest body) {
+      @Parameter(schema = @Schema(type = "integer", minimum = "1")) @Min(1) @PathVariable int id,
+      @Validated @RequestBody UserUpdateRequest body) {
     logger.debug("[updateUserById] Updating {} by id [{}]", User.class.getSimpleName(), id);
 
     return ResponseEntity.ok(userService.updateUserById(id, body));
