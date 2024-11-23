@@ -4,9 +4,12 @@ Generated
 by [Spring Initializr](https://start.spring.io/#!type=gradle-project-kotlin&language=java&platformVersion=3.3.5&packaging=jar&jvmVersion=23&groupId=dev.fresult&artifactId=railwayManagement&name=Railway%20Management%20API&description=To%20manage%20railway%20and%20rail%20ticket.&packageName=dev.fresult.railwayManagement&dependencies=devtools,web,data-jdbc,security,postgresql,flyway,validation)
 
 ## Prerequisite
+
 1. Java Development Kit (JDK) version 23
 2. IntelliJ IDEA (or any preferred IDE)
 3. Docker and Docker Compose
+4. [Draw.io Integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio) (VS Code extension,
+   to read ER-Diagram)
 
 ## In development mode
 
@@ -48,4 +51,5 @@ by [Spring Initializr](https://start.spring.io/#!type=gradle-project-kotlin&lang
 ```
 
 ### How to see the API documentation (OpenAPI)
+
 - Open the browser and go to <http://localhost:8080/swagger-ui/index.html>
