@@ -53,3 +53,11 @@ by [Spring Initializr](https://start.spring.io/#!type=gradle-project-kotlin&lang
 ### How to see the API documentation (OpenAPI)
 
 - Open the browser and go to <http://localhost:8080/swagger-ui/index.html>
+
+## Requirement
+- [x] Resource Entity for Train(Trip)s, Stations, Tickets
+- [x] API Endpoints for Train(Trip)s, Stations, Tickets
+- [x] Implement business logic in the service layer
+- [ ] Using JPA as a data persistence
+- [ ] Authentication
+- [x] Documentation using Swagger
